@@ -50,6 +50,21 @@ export const ActionProgressOpen = AppActionID++;
 export const ActionProgressClose = AppActionID++;
 export const ActionLogout = AppActionID++;
 
+export enum DW      // Enum representing size ranges for Available Width
+{
+  PHONE,
+  PHONEPLUS,
+  NARROW,
+  NARROWPLUS,
+  NARROWPLUS2,
+  TABLET,
+  MEDIUM,
+  MEDIUMPLUS,
+  WIDE,
+  WIDER,
+  WIDEST,
+}
+
 export class AppActions extends ClientActions.ClientActions
 {
   app: ClientActions.IClientActions;
@@ -404,7 +419,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
   {
     const { env, actions } = this.props;
     let { profileState } = this.state;
-    const u = env.clientSession && env.clientSession.user ? env.clientSession.user : {};
+    const u = env.account.user;
     let sp: OT.SessionProps = null;
     let param: any;
 
@@ -421,7 +436,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
         break;
 
       case ActionProfileOpen:
-        this.setState({ openTopDrawer: false, openProfile: true, profileState: { name: u.name, email: u.email, password: '', twitterhandle: u.twitterhandle } });
+        this.setState({ openProfile: true, profileState: { name: u.name, email: u.email, password: '', twitterhandle: u.twitterhandle } });
         break;
 
       case ActionProfile:
@@ -434,7 +449,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
       // Login dialog actions
       case ActionLoginOpen:
-        actions.fire(ClientActions.Hash, {sessionID: '', mapView: HOMEVIEW_LOGIN, replace: true});
+        //actions.fire(ClientActions.Hash, {sessionID: '', mapView: HOMEVIEW_LOGIN, replace: true});
         break;
 
       case ActionLogin:
@@ -448,7 +463,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
       // Signup dialog actions
       case ActionSignupOpen:
-        actions.fire(ClientActions.Hash, {sessionID: '', mapView: HOMEVIEW_SIGNUP, replace: true});
+        //actions.fire(ClientActions.Hash, {sessionID: '', mapView: HOMEVIEW_SIGNUP, replace: true});
         break;
 
       case ActionSignup:
@@ -640,7 +655,7 @@ let MaterialTheme: any = Material.createMuiTheme(
         contrastText: '#ebf0f0',
       },
       background: {
-        default: appBackgroundColor,
+        default: '#ffffff',
       },
     },
   }

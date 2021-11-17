@@ -74,7 +74,7 @@ verifyRouter.use(function(req, res, next) {
 app.use('/', express.static('public'));
 app.use('/', express.static('data'));
 app.use('/', express.static('config'));
-app.use('/scripts', express.static('clientdist'));
+app.use('/scripts', express.static('dist'));
 
 // Authentication and user management
 
@@ -292,12 +292,6 @@ verifyRouter.route('/:verifyGUID')
     apiManager.verifyEmail(req, res, req.params.verifyGUID);
     });
 app.use('/verify', verifyRouter);
-
-// Admin route
-router.route('/admin')
-  .post(isAdminAPI, function(req, res) {
-    apiManager.admin(req, res);
-    });
 
 // API routes
 router.route('/sessions')

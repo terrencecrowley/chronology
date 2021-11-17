@@ -250,7 +250,7 @@ export class FsmAPIUserView extends FsmAPI
 {
   constructor(env: Environment, req: any, res: any)
     {
-      super(env, '', 'userview', req, res);
+      super(env, 'userview', req, res);
     }
 
   tick(): void
@@ -278,7 +278,7 @@ export class FsmAPIProfile extends FsmAPI
 
   constructor(env: Environment, req: any, res: any)
     {
-      super(env, '', 'updateprofile', req, res);
+      super(env, 'updateprofile', req, res);
       this.fsmFind = null;
     }
 
@@ -356,7 +356,7 @@ export class FsmAPIResetPassword extends FsmAPI
 
   constructor(env: Environment, req: any, res: any, email: string)
     {
-      super(env, '', 'resetpassword', req, res);
+      super(env, 'resetpassword', req, res);
 
       this.fsmFind = this.env.userManager.findByEmail(email);
       this.waitOn(this.fsmFind);
@@ -400,7 +400,7 @@ export class FsmAPIResetPasswordByGUID extends FsmAPI
 
   constructor(env: Environment, req: any, res: any, password: string, resetGUID: string)
     {
-      super(env, '', 'resetpasswordbyguid', req, res);
+      super(env, 'resetpasswordbyguid', req, res);
 
       this.password = password;
       this.resetGUID = resetGUID;
@@ -442,7 +442,7 @@ export class FsmAPIVerifyEmail extends FsmAPI
 
   constructor(env: Environment, req: any, res: any, verifyGUID: string)
     {
-      super(env, '', 'verifyemail', req, res);
+      super(env, 'verifyemail', req, res);
 
       this.fsmFind = this.env.userManager.find({ verifyGUID: verifyGUID });
       this.waitOn(this.fsmFind)
@@ -631,7 +631,7 @@ export class FsmAPIPresign extends FsmAPI
 
   constructor(env: Environment, req: any, res: any)
   {
-    super(env, '', 'presign', req, res);
+    super(env, 'presign', req, res);
   }
 
   tick(): void
@@ -742,6 +742,7 @@ export class SessionManager
   updateTracker: FSM.FsmTracker;
   mru: MRU.ExpiringMRU;
   config: any;
+  isDraining: boolean;
 
   // Constructor
   constructor(env: Environment)
@@ -795,10 +796,8 @@ export class SessionManager
     this.mru.unblock(sid);
   }
 
-  /*
   flushRemoteMRU(sid: string): void
   {
-    this.env.queueManager.sendAdmin({ nobounceback: true, command: 'flushmru', mru: 'session', id: sid });
+    //this.env.queueManager.sendAdmin({ nobounceback: true, command: 'flushmru', mru: 'session', id: sid });
   }
-  */
 }

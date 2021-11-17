@@ -1,1 +1,1 @@
-var run = require('./dist/draserver.bundle.js');
+var run = require('./dist/server.bundle.js');

@@ -6,6 +6,7 @@ import { Storage, S3, DB, DBDynamo, Lambda } from '@dra2020/baseserver';
 import * as APIManager from './serversession';
 import * as UM from './users';
 import * as SM from './sessionmanager';
+import * as TM from './transfermanager';
 import * as Store from './storemanager';
 
 export interface Environment
@@ -19,6 +20,7 @@ export interface Environment
   userManager: UM.UserManager;
   storeManager: Store.StoreManager;
   sessionManager: SM.SessionManager;
+  transferManager: TM.TransferManager;
 }
 
 const Defaults: Context.ContextValues =
@@ -77,6 +79,7 @@ export let BucketMap: any = {
   'default': 'template-bucket',
   'development': 'template-bucket',
   'production': 'template-bucket',
+  'transfers': 'template-bucket',
 };
 
 export let Schemas: any = {
@@ -134,6 +137,7 @@ export function create(): Environment
       userManager: null,
       storeManager: null,
       sessionManager: null,
+      transferManager: null,
     };
 
   // Setup context
@@ -179,6 +183,9 @@ export function create(): Environment
 
   // Session props manager
   env.sessionManager = new SM.SessionManager(env);
+
+  // Session props manager
+  env.transferManager = new TM.TransferManager(env);
 
   // Validate startup
   new FsmCheckDBStart(env);

@@ -10,7 +10,7 @@ import { Storage, DB } from '@dra2020/baseserver';
 import * as UM from './users';
 import * as SM from './sessionmanager';
 import * as Store from './storemanager';
-import { Environment } from './env';
+import { Environment, create } from './env';
 
 export class APIManager
 {
@@ -23,6 +23,8 @@ export class APIManager
 
   nAPI: number;
 
+  isDraining: boolean;
+
   // constructor
   constructor()
     {
@@ -30,8 +32,9 @@ export class APIManager
       this.nHouseKeeping = 0;
       this.setHousekeepingTimer();
 
-      this.env = Env.create();
+      this.env = create();
       this.nAPI = 0;
+      this.isDraining = false;
     }
 
   countAPI(api: string, fsm: FSM.Fsm): void
@@ -67,11 +70,6 @@ export class APIManager
   verifyEmail(req: any,  res: any, verifyGUID: string): void
     {
       this.countAPI('verifyemail', new SM.FsmAPIVerifyEmail(this.env, req, res, verifyGUID));
-    }
-
-  admin(req: any, res: any): void
-    {
-      this.countAPI('admin', new SM.FsmAPIAdmin(this.env, req, res));
     }
 
   recordMemoryUse()

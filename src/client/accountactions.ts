@@ -56,7 +56,7 @@ export class AccountActions extends ClientActions.ClientActions
 {
   user: any;
   message: string;
-  requests: { [action: string]: FsmAccountAPI };
+  requests: { [action: string]: Fsm };
 
   constructor(env: Environment)
   {
@@ -80,11 +80,11 @@ export class AccountActions extends ClientActions.ClientActions
         break;
 
       case ClientActions.Login:
-        this.requests['login'] = new FsmLogin(this.env, this, { username: o.email, password: o.password });
+        this.requests['login'] = new FsmLogin(this.env, this, { username: arg.email, password: arg.password });
         break;
 
       case ClientActions.Signup:
-        this.requests['login'] = new FsmLogin(this.env, this, { signup: true, username: o.email, password: o.password });
+        this.requests['login'] = new FsmLogin(this.env, this, { signup: true, username: arg.email, password: arg.password });
         break;
 
       case ClientActions.ForgotPassword:

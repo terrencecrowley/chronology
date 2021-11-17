@@ -46,14 +46,6 @@ class Actions extends ClientActions.ClientActions
         this.app.forceRender();
         break;
 
-      case ClientActions.Logout:
-        this.app.actionLogout();
-        break;
-
-      case ClientActions.DoneLogin:
-        this.app.actionDoneLogin(arg);
-        break;
-
       case ClientActions.SetErrorMessage:
         this.app.actionSetErrorMessage(arg as string);
         break;
@@ -213,7 +205,6 @@ class App
 
   reTick(): void
   {
-    setTimeout(function () { theApp.tick(); }, this.env.clientSession.speed.speed);
   }
 
   initialize(): void
@@ -282,13 +273,13 @@ class App
   actionProfile(arg: any): void
   {
     // { name?: string, email?: string, password?: string, verify?: any, feedback?: string, twitterhandle?: string }
-    this.env.clientSession.updateProfile(arg);
+    //this.env.clientSession.updateProfile(arg);
   }
 
   actionVerifyEmail(): void
   {
-    this.env.clientSession.user.verified = 2; // pending
-    this.env.clientSession.updateProfile({ verify: '' });
+    //this.env.clientSession.user.verified = 2; // pending
+    //this.env.clientSession.updateProfile({ verify: '' });
     this.forceRender();
   }
 

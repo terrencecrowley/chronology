@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node server",
-    "build": "webpack --config buildconfig/prod.config.js",
-    "builddev": "webpack --config buildconfig/dev.config.js",
+    "test": "node server",
+    "build": "webpack --config buildconfig/all.config.prod.js",
+    "builddev": "webpack --config buildconfig/all.config.dev.js",
+    "buildserver": "webpack --config buildconfig/server.config.dev.js",
+    "buildclient": "webpack --config buildconfig/client.config.dev.js",
     "webpack": "node_modules/.bin/webpack"
   },
   "repository": {

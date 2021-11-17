@@ -2,13 +2,10 @@
   "include": [ "src/**/*", "types/**/*" ],
 
   "compilerOptions": {
-    "sourceMap": true,
     "noImplicitAny": true,
+    "sourceMap": true,
     "target": "es6",
-    "lib": [
-      "es6"
-    ],
     "module": "commonjs",
-    "jsx": "react",
+    "jsx": "react"
   }
 }

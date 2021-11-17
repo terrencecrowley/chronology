@@ -14,6 +14,7 @@ import { OT } from '@dra2020/baseclient';
 
 // App libraries
 import * as MA from './materialapp';
+import * as ClientActions from '../clientactions';
 
 export interface StaticTextViewProps
 {
@@ -128,7 +129,7 @@ class InternalStaticTextView extends React.Component<StaticTextViewProps, Static
     let rows: any[] = [];
     for (;this.index < text.data.length;this.index++)
     {
-      let block: RDM.TextBlock = text.data[this.index];
+      let block: ClientActions.TextBlock = text.data[this.index];
       let style: any = block.variant; // Could do translation to Typography variants here
 
       if (style === 'beginExpansion')

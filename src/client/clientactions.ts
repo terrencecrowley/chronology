@@ -9,6 +9,9 @@ import * as TV from "./components/tableview";
 let ActionID = -1;
 export const NoOp: number = ActionID++;
 export const Home: number = ActionID++;
+export const Render: number = ActionID++;
+export const Undo: number = ActionID++;
+export const Redo: number = ActionID++;
 export const Hash: number = ActionID++; // arg is ParamHash
 export const Logout: number = ActionID++;
 export const Profile: number = ActionID++;
@@ -16,9 +19,20 @@ export const ResetPassword: number = ActionID++;
 export const VerifyEmail: number = ActionID++;
 export const SelectionEmpty: number = ActionID++;
 export const SelectionSet: number = ActionID++; // arg is sid
+export const SelectionDouble: number = ActionID++; // arg is sid
 export const SelectionClear: number = ActionID++; // arg is sid
 export const SelectionSetAll: number = ActionID++;
 export const SelectionMeta: number = ActionID++;
+export const TableIconSelect: number = ActionID++;
+export const TableCheckSelect: number = ActionID++;
+export const TableButtonSelect: number = ActionID++;
+export const TableSort: number = ActionID++;
+export const SetColumn: number = ActionID++;
+
+// Dialogs
+export const Open: number = ActionID++;
+export const Close: number = ActionID++;
+export const Apply: number = ActionID++;
 
 export const SetErrorMessage = ActionID++;  // arg is error string
 
