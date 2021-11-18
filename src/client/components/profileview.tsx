@@ -13,10 +13,22 @@ import classNames from 'classnames';
 import * as ClientActions from "../clientactions";
 import * as MA from './materialapp';
 
+function profileOpen(appProps: MA.AppProps, params: any): { props: any, state: any }
+{
+  let props = { actions: appProps.actions, profileState: params };
+  return { props: props, state: null };
+}
+
+function profileRender(props: any, state: any): any
+{
+  return (<ProfileView actions={props.actions} profileState={props.profileState} />);
+}
+
+export let Viewer: MA.Viewer = { name: 'profile', open: profileOpen, render: profileRender };
+
 export interface ProfileViewProps
 {
   actions: ClientActions.ClientActions;
-  openProfile: boolean;
   profileState: ClientActions.ParamProfile;
 
   classes?: any;
@@ -34,18 +46,29 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
   {
     super(props);
 
+    this.handleClose = this.handleClose.bind(this);
+  }
+
+  handleClose(ok: boolean): void
+  {
+    const {actions, profileState} = this.props;
+
+    if (ok)
+      actions.fire(ClientActions.Apply, { name: 'profile', props: this.props, state: this.state });
+
+    actions.fire(ClientActions.Close, { name: 'profile' });
   }
 
   render()
   {
-    const {actions, openProfile, profileState} = this.props;
+    const {actions, profileState} = this.props;
     let bNoEmail: boolean = profileState.email == '';
     let bNoName: boolean = profileState.name == '';
 
     return (
       <Material.Dialog
-        open={openProfile}
-        onClose={(e: any) => actions.fire(MA.ActionProfileClose, e)}
+        open={true}
+        onClose={() => this.handleClose(false)}
         aria-labelledby="User Profile Dialog"
       >
         <Material.DialogTitle id="profile-dialog-title">User Profile</Material.DialogTitle>
@@ -60,7 +83,7 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
             label="User Name"
             inputProps={{name: 'name'}}
             onChange={(e: any) => actions.fire(MA.ActionProfileEditField, e)}
-            onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) actions.fire(MA.ActionProfile, e) }}
+            onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) this.handleClose(true) }}
             type="text"
             value={profileState.name}
             fullWidth
@@ -71,7 +94,7 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
             label="Email Address"
             inputProps={{name: 'email'}}
             onChange={(e: any) => actions.fire(MA.ActionProfileEditField, e)}
-            onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) actions.fire(MA.ActionProfile, e) }}
+            onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) this.handleClose(true) }}
             type="email"
             value={profileState.email}
             fullWidth
@@ -82,7 +105,7 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
             label="Password"
             inputProps={{name: 'password'}}
             onChange={(e: any) => actions.fire(MA.ActionProfileEditField, e)}
-            onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) actions.fire(MA.ActionProfile, e) }}
+            onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) this.handleClose(true) }}
             type="password"
             value={profileState.password}
             fullWidth
@@ -94,7 +117,7 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
             label="Twitter Handle"
             inputProps={{name: 'twitterhandle'}}
             onChange={(e: any) => actions.fire(MA.ActionProfileEditField, e)}
-            onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) actions.fire(MA.ActionProfile, e) }}
+            onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) this.handleClose(true) }}
             type="text"
             value={profileState.twitterhandle}
             fullWidth
@@ -104,10 +127,10 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
           <Material.Button disabled={bNoEmail} onClick={(e: any) => actions.fire(MA.ActionVerifyEmail, e)} color="primary">
             Verify Email
           </Material.Button>
-          <Material.Button onClick={(e: any) => actions.fire(MA.ActionProfileClose, e)} color="primary">
+          <Material.Button onClick={() => this.handleClose(false)} color="primary">
             Cancel
           </Material.Button>
-          <Material.Button disabled={bNoEmail || bNoName} onClick={(e: any) => actions.fire(MA.ActionProfile, e)} color="primary">
+          <Material.Button disabled={bNoEmail || bNoName} onClick={() => this.handleClose(true)} color="primary">
             Update Profile
           </Material.Button>
         </Material.DialogActions>

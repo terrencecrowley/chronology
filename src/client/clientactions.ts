@@ -55,6 +55,15 @@ export const OpenReset: number = ActionID++;
 export const DoneLogin: number = ActionID++;
 export const DoneResetForgot: number = ActionID++;
 
+export type ViewerProps = { [dialog: string]: any };
+export type ViewerState = { [dialog: string]: any };
+
+export interface ParamOpen
+{
+  name: string,
+  params?: any,
+}
+
 export interface TextBlock
 {
   variant: string;  // title, subheading, body1, body2, row, link, indentBody, beginTable/EndTable, beginExpansion/endExpansion
@@ -88,6 +97,13 @@ export interface ParamAlert
   cancel?: string;                // Text for cancel button
   onClose?: CloseFunction;        // Function to close (triggered by OK, ESC, click anywhere)
   anchorOrigin?: {vertical: number | 'top' | 'center' | 'bottom', horizontal: number | 'left' | 'center' | 'right'};
+}
+
+export interface ParamPick
+{
+  alertParam: ParamAlert,
+  multiple?: boolean,
+  target?: string,
 }
 
 export interface ParamProgress

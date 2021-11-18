@@ -13,10 +13,23 @@ import classNames from 'classnames';
 import * as ClientActions from "../clientactions";
 import * as MA from './materialapp';
 
+
+function alertOpen(appProps: MA.AppProps, params: any): { props: any, state: any }
+{
+  let props = { actions: appProps.actions, alertParam: params };
+  return { props: props, state: null };
+}
+
+function alertRender(props: any, state: any): any
+{
+  return (<AlertView actions={props.actions} alertParam={props.alertParam} />);
+}
+
+export let Viewer: MA.Viewer = { name: 'alert', open: alertOpen, render: alertRender };
+
 export interface AlertViewProps
 {
   actions: ClientActions.ClientActions;
-  openAlert: boolean;
   alertParam: ClientActions.ParamAlert;
 
   classes?: any;
@@ -44,20 +57,30 @@ class InternalAlertView extends React.Component<AlertViewProps, {}>
     return (<div>{divs}</div>);
   }
 
+  handleClose(ok: boolean): void
+  {
+    const {actions, alertParam} = this.props;
+
+    if (alertParam.onClose)
+      alertParam.onClose(ok);
+
+    actions.fire(ClientActions.Close, { name: 'alert' });
+  }
+
   render(): any
   {
     const {classes, actions, alertParam} = this.props;
 
     return (
       <Material.Dialog
-        open={alertParam.message != ''}
+        open={true}
         onClose={() => this.handleClose(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <Material.DialogTitle id="alert-dialog-title">{alertParam.title}</Material.DialogTitle>
         <Material.DialogContent>
-          <div className={classes.shareDialogRoot} />
+          <div className={classes.dialogRoot} />
           <Material.DialogContentText id="alert-dialog-description">
             {this.multiline(alertParam.message)}
           </Material.DialogContentText>
@@ -79,16 +102,6 @@ class InternalAlertView extends React.Component<AlertViewProps, {}>
         </Material.DialogActions>
       </Material.Dialog>
     );
-  }
-
-  handleClose(ok: boolean): void
-  {
-    const {actions, alertParam} = this.props;
-
-    if (alertParam.onClose)
-      alertParam.onClose(ok);
-
-    actions.fire(MA.ActionAlertClose, ok);
   }
 }
 

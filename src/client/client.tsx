@@ -13,8 +13,10 @@ import * as ClientActions from "./clientactions";
 import * as AA from "./accountactions";
 import * as MA from "./components/materialapp";
 import * as TV from './components/tableview';
+import * as Viewers from './components/viewers';
 import * as Hash from './hash';
 import * as Ajax from "./ajax";
+import { FsmReadFile, FsmReadJSONFiles } from './readfile';
 
 let coder: Util.Coder = { encoder: new TextEncoder(), decoder: new TextDecoder('utf-8') };
 
@@ -46,54 +48,16 @@ class Actions extends ClientActions.ClientActions
         this.app.forceRender();
         break;
 
-      case ClientActions.SetErrorMessage:
-        this.app.actionSetErrorMessage(arg as string);
+      case ClientActions.Open:
+        this.app.actionOpen(arg);
         break;
 
-      case ClientActions.CloseResetPassword:
-        this.app.actionCloseResetPassword();
+      case ClientActions.Close:
+        this.app.actionClose(arg);
         break;
 
-      case ClientActions.OpenForgotPassword:
-        this.app.actionOpenForgotPassword();
-        break;
-
-      case ClientActions.CloseForgotPassword:
-        this.app.actionCloseForgotPassword();
-        break;
-
-      case ClientActions.Profile:
-        this.app.actionProfile(arg);
-        break;
-
-      case ClientActions.VerifyEmail:
-        this.app.actionVerifyEmail();
-        break;
-
-      case ClientActions.OpenAlert:
-        this.app.actionOpenAlert(arg as ClientActions.ParamAlert);
-        break;
-
-      case ClientActions.CloseAlert:
-        this.app.actionCloseAlert();
-        break;
-
-      case ClientActions.OpenProgress:
-        this.app.actionOpenProgress(arg as ClientActions.ParamProgress);
-        break;
-
-      case ClientActions.CloseProgress:
-        this.app.actionCloseProgress();
-        break;
-
-      case ClientActions.DoneResetForgot:
-        this.app.actionDoneResetForgot(arg as ClientActions.ParamAlert);
-        break;
-      
-      case ClientActions.ResetPassword:
-        let profileState: ClientActions.ParamProfile = arg as ClientActions.ParamProfile;
-        profileState.resetGUID = this.app.resetGUID;
-        handled = false;
+      case ClientActions.Apply:
+        this.app.actionApply(arg);
         break;
     }
 
@@ -136,19 +100,18 @@ class App
     // Initialize props
     this.props = {
       env: this.env,
-      title: 'DRA 2020',
+      title: 'Template',
       roles: {},
       actions: this.actions,
       isAnon: false,
 
-      alertParam: { title: '', message: '' },
-      progressParam: { title: '', message: '' },
-
       // General
-      openAlert: false,
-      openProgress: false,
-      openReset: false,
-      openForgot: false,
+      viewerProps: {},
+      viewerState: {},
+      viewers: Viewers.viewers(),
+
+      // Content
+      rows: [],
     };
 
     this.handleResize = this.handleResize.bind(this);
@@ -203,10 +166,6 @@ class App
     }
   }
 
-  reTick(): void
-  {
-  }
-
   initialize(): void
   {
     window.addEventListener('hashchange', (ev: HashChangeEvent) => {
@@ -215,7 +174,7 @@ class App
       //console.log('Hash change:' + location.hash);
       this.handleHashChange(location);
     });
-    this.reTick();
+    this.forceRender();
   }
 
   handleHashChange(location: Location): void
@@ -229,10 +188,8 @@ class App
 
   clearOpenDialogs(): void
   {
-    this.props.openAlert = false;
-    this.props.openProgress = false;
-    //this.props.openReset = false;
-    this.props.openForgot = false;
+    this.props.viewerProps = {};
+    this.props.viewerState = {};
   }
 
   updateDesignSize(): void
@@ -263,24 +220,34 @@ class App
     */
   }
 
-  actionSetErrorMessage(err: string): void
+  actionOpen(arg: any): void
   {
-    this.props.openAlert = true;
-    this.props.alertParam = {title: 'Error', message: err};
+    let { props, state } = this.props.viewers[arg.name].open(this.props, arg.params);
+    this.props.viewerProps[arg.name] = props;
+    this.props.viewerState[arg.name] = state;
     this.forceRender();
   }
 
-  actionProfile(arg: any): void
+  actionClose(arg: any): void
   {
-    // { name?: string, email?: string, password?: string, verify?: any, feedback?: string, twitterhandle?: string }
-    //this.env.clientSession.updateProfile(arg);
+    delete this.props.viewerProps[arg.name];
+    delete this.props.viewerState[arg.name];
+    this.forceRender();
   }
 
-  actionVerifyEmail(): void
+  actionApply(arg: any): void
   {
-    //this.env.clientSession.user.verified = 2; // pending
-    //this.env.clientSession.updateProfile({ verify: '' });
-    this.forceRender();
+    const { name, props, state } = arg;
+
+    switch (name)
+    {
+      case 'pick':
+        new FSM.FsmOnDone(this.props.env, new FsmReadJSONFiles(this.props.env, state.files), (f: FsmReadJSONFiles) => {
+            this.props.rows = f.rows;
+            this.forceRender();
+          });
+        break;
+    }
   }
 
   actionDownloadData(param: ClientActions.ParamDownloadData): void
@@ -298,65 +265,6 @@ class App
     document.body.removeChild(element);
   }
 
-  actionOpenAlert(param: ClientActions.ParamAlert): void
-  {
-    this.props.openAlert = true;
-    this.props.alertParam = param;
-    this.forceRender();
-  }
-
-  actionDoneResetForgot(param: ClientActions.ParamAlert): void
-  {
-    this.props.openReset = false;
-    this.props.openForgot = false;
-    this.props.openAlert = true;
-    this.props.alertParam = param;
-    this.forceRender();
-  }
-
-  actionCloseAlert(): void
-  {
-    this.props.openAlert = false;
-    this.props.alertParam = { title: '', message: '' };
-    this.forceRender();
-  }
-
-  actionOpenProgress(param: ClientActions.ParamProgress): void
-  {
-    this.props.openProgress = true;
-    this.props.progressParam = param;
-    this.forceRender();
-  }
-
-  actionCloseProgress(): void
-  {
-    this.props.openProgress = false;
-    this.props.progressParam = { title: '', message: '' };
-    this.forceRender();
-  }
-
-  actionOpenForgotPassword(): void
-  {
-    this.props.openForgot = true;
-    this.forceRender();
-  }
-
-  actionCloseForgotPassword(): void
-  {
-    this.props.openForgot = false;
-    this.forceRender();
-  }
-
-  actionCloseResetPassword(): void
-  {
-    this.props.openReset = false;
-    this.forceRender();
-  }
-
-  tick(): void
-  {
-    this.reTick();
-  }
 }
 
 let theApp: App = null;

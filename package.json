@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server",
     "test": "node server",
-    "build": "webpack --config buildconfig/all.config.prod.js",
+    "build": "webpack --config buildconfig/all.config.dev.js",
+    "buildprod": "webpack --config buildconfig/all.config.prod.js",
     "builddev": "webpack --config buildconfig/all.config.dev.js",
     "buildserver": "webpack --config buildconfig/server.config.dev.js",
     "buildclient": "webpack --config buildconfig/client.config.dev.js",

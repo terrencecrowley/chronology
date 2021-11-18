@@ -16,7 +16,6 @@ import * as MA from './materialapp';
 export interface ProgressViewProps
 {
   actions: ClientActions.ClientActions;
-  openProgress: boolean;
   progressParam: ClientActions.ParamProgress;
 
   classes?: any;
@@ -37,11 +36,19 @@ class InternalProgressView extends React.Component<ProgressViewProps, {}>
     this.handleClose = this.handleClose.bind(this);
   }
 
+  handleClose(e: any): void
+  {
+    const {actions, progressParam} = this.props;
+
+    if (progressParam.onClose)
+      progressParam.onClose(true);
+
+    actions.fire(MA.ActionProgressClose, e);
+  }
+
   render(): any
   {
-    const {classes, actions, openProgress, progressParam} = this.props;
-
-    if (! openProgress) return null;
+    const {classes, actions, progressParam} = this.props;
 
     let icon = progressParam.value === undefined
                   ? <Material.CircularProgress />
@@ -49,14 +56,14 @@ class InternalProgressView extends React.Component<ProgressViewProps, {}>
 
     return (
       <Material.Dialog
-        open={openProgress}
+        open={true}
         onClose={this.handleClose}
         aria-labelledby="progress-dialog-title"
         aria-describedby="progress-dialog-description"
       >
         <Material.DialogTitle id="progress-dialog-title">{progressParam.title}</Material.DialogTitle>
         <Material.DialogContent>
-          <div className={classes.shareDialogRoot} />
+          <div className={classes.dialogRoot} />
           <Material.DialogContentText id="progress-dialog-description">
             {progressParam.message}
           </Material.DialogContentText>
@@ -69,16 +76,6 @@ class InternalProgressView extends React.Component<ProgressViewProps, {}>
         </Material.DialogActions>
       </Material.Dialog>
     );
-  }
-
-  handleClose(e: any): void
-  {
-    const {actions, progressParam} = this.props;
-
-    if (progressParam.onClose)
-      progressParam.onClose(true);
-
-    actions.fire(MA.ActionProgressClose, e);
   }
 }
 

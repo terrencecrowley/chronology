@@ -101,23 +101,32 @@ export class AppActions extends ClientActions.ClientActions
   }
 }
 
+export interface Viewer
+{
+  name: string,
+  open: (appProps: AppProps, params: any) => { props: any, state: any },
+  render: (props: any, state: any) => any,
+}
+
+export type ViewerIndex = { [name: string]: Viewer };
+
 export interface AppProps
 {
   env: Environment;
   title: string;
   actions: ClientActions.ClientActions;
-  alertParam: ClientActions.ParamAlert;
-  progressParam: ClientActions.ParamProgress;
 
   // Dialogs
-  openAlert: boolean;
-  openProgress: boolean;
-  openReset: boolean;
-  openForgot: boolean;
+  viewers: ViewerIndex;
+  viewerProps: ClientActions.ViewerProps;
+  viewerState: ClientActions.ViewerState;
 
   // Home or per-session
   isAnon: boolean;
   roles: { [role: string]: boolean };
+
+  // Stuff to display
+  rows: any[];
 
   clearState?: boolean;
   classes?: any;
@@ -127,8 +136,6 @@ export interface AppProps
 // Items that purely control visibility
 export interface AppState
 {
-  openProfile: boolean;
-  profileState: ClientActions.ParamProfile;
 }
 
 const shadingColor = MuiColors.indigo[50];
@@ -177,7 +184,7 @@ export function AppStyles(theme: any): any
       maxWidth: '80vw',
       minWidth: '80vw',
     },
-    shareDialogRoot: {
+    dialogRoot: {
       minWidth: 552,
     },
     tableTitle: {
@@ -212,6 +219,11 @@ export function AppStyles(theme: any): any
       width: 120,
       paddingRight: 12,
       textAlign: 'right',
+    },
+    table: {
+      position: 'relative',
+      width: '100%',
+      height: '90vh',
     },
     tableHeader: {
       display: 'flex',
@@ -404,6 +416,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 {
   env: Environment;
   appActions: AppActions;
+  viewers: ViewerIndex;
 
   constructor(props: AppProps)
   {
@@ -413,93 +426,19 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
     this.appActions = new AppActions(this);
     props.actions.mixin(this.appActions);
+
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handlePick = this.handlePick.bind(this);
   }
 
   fire(id: number, e?: any): boolean
   {
     const { env, actions } = this.props;
-    let { profileState } = this.state;
     const u = env.account.user;
-    let sp: OT.SessionProps = null;
     let param: any;
 
     switch (id)
     {
-      // Profile dialog actions
-      case ActionProfileEditField:
-        profileState[e.target.name] = e.target.value;
-        this.setState({ profileState: profileState });
-        break;
-
-      case ActionProfileClose:
-        this.setState({ openProfile: false });
-        break;
-
-      case ActionProfileOpen:
-        this.setState({ openProfile: true, profileState: { name: u.name, email: u.email, password: '', twitterhandle: u.twitterhandle } });
-        break;
-
-      case ActionProfile:
-        param = { name: profileState.name, email: profileState.email, twitterhandle: profileState.twitterhandle };
-        if (profileState.password != '')
-          param.password = profileState.password;
-        actions.fire(ClientActions.Profile, param);
-        this.setState({ openProfile: false });
-        break;
-
-      // Login dialog actions
-      case ActionLoginOpen:
-        //actions.fire(ClientActions.Hash, {sessionID: '', mapView: HOMEVIEW_LOGIN, replace: true});
-        break;
-
-      case ActionLogin:
-        param = { email: profileState.email, password: profileState.password };
-        actions.fire(ClientActions.Login, param);
-        break;
-
-      case ActionLogout:
-        actions.fire(ClientActions.Logout);
-        break;
-
-      // Signup dialog actions
-      case ActionSignupOpen:
-        //actions.fire(ClientActions.Hash, {sessionID: '', mapView: HOMEVIEW_SIGNUP, replace: true});
-        break;
-
-      case ActionSignup:
-        param = { email: profileState.email, password: profileState.password };
-        actions.fire(ClientActions.Signup, param);
-        break;
-
-      // Forgot Password Dialog Actions
-      case ActionForgotOpen:
-        actions.fire(ClientActions.OpenForgotPassword);
-        break;
-
-      case ActionForgotClose:
-        actions.fire(ClientActions.CloseForgotPassword);
-        break;
-
-      case ActionForgot:
-        actions.fire(ClientActions.ForgotPassword, { email: profileState.email });
-        break;
-
-      case ActionResetOpen:
-        actions.fire(ClientActions.OpenReset);
-        break;
-
-      case ActionResetClose:
-        actions.fire(ClientActions.CloseResetPassword);
-        break;
-
-      case ActionReset:
-        actions.fire(ClientActions.ResetPassword, { password: profileState.password });
-        break;
-
-      case ActionVerifyEmail:
-        actions.fire(ClientActions.VerifyEmail);
-        break;
-
       case ActionAlertOpen:
         actions.fire(ClientActions.OpenAlert, e);
         break;
@@ -523,65 +462,6 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     }
 
     return true;
-  }
-
-  renderProfileDialog(): any
-  {
-    const { actions } = this.props;
-    const { openProfile, profileState } = this.state;
-    if (!openProfile) return null;
-
-    return (<Profile.ProfileView actions={actions} openProfile={openProfile} profileState={profileState} />);
-  }
-
-  renderForgotDialog(): any
-  {
-    const { actions, openForgot, alertParam } = this.props;
-    const { profileState } = this.state;
-    if (!openForgot) return null;
-
-    let props: ForgotView.ForgotViewProps = {
-      actions: actions, profileState: profileState, openForgot: openForgot, alertParam: alertParam
-    };
-
-    return <ForgotView.ForgotView {...props} />;
-  }
-
-  renderResetDialog(): any
-  {
-    const { actions, openReset } = this.props;
-    const { profileState } = this.state;
-    if (!openReset) return null;
-
-    let props: ResetView.ResetViewProps = {
-      actions: actions, profileState: profileState, openReset: openReset
-    };
-
-    return <ResetView.ResetView {...props} />;
-  }
-
-  renderAlertDialog(): any
-  {
-    const { actions, openAlert, alertParam } = this.props;
-    if (!openAlert) return null;
-
-    let props: AlertView.AlertViewProps = {
-      actions: actions, openAlert: openAlert, alertParam: alertParam
-    };
-
-    return <AlertView.AlertView {...props} />;
-  }
-
-  renderProgressDialog(): any
-  {
-    const { actions, openProgress, progressParam } = this.props;
-    if (!openProgress) return null;
-
-    let props: ProgressView.ProgressViewProps = {
-      actions: actions, openProgress: openProgress, progressParam: progressParam
-    };
-
-    return <ProgressView.ProgressView {...props} />;
   }
 
   componentWillReceiveProps(props: AppProps): void
@@ -614,19 +494,70 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     }
   }
 
+  renderTable(): any
+  {
+    const {classes, actions, rows} = this.props;
+    let Columns: TV.ColumnList = [
+      { id: 'name', fieldType: 'string', disablePadding: true, label: 'Name' },
+      { id: 'isjson', fieldType: 'boolean', disablePadding: true, label: 'J?' },
+    ];
+    function Sorter(rows: TV.RowList, orderBy: string, order: TV.Ordering): TV.RowList
+    {
+      return TV.TableViewSorter(rows, Columns, orderBy, order);
+    }
+    let tablerows = rows.map((r: any) => { return ({ name: r.name, isjson: r.json != null }) });
+    let tvProps: TV.TableViewProps = {
+      actions: actions,
+      selection: null,
+      columns: Columns,
+      rows: tablerows,
+      sorter: Sorter,
+      ordering: 'ASC',
+      orderBy: 'name',
+      outerHeight: "400px",
+      rowHeight: 36,
+      disableHeader: false,
+      showCheck: false,
+    };
+
+    return ( <div className={classes.table}>
+              <TV.TableView {...tvProps} />
+             </div>);
+  }
+
+  renderViewers(): any[]
+  {
+    const { viewerProps } = this.props;
+    const { viewerState } = this.props;
+
+    let views: any[] = [];
+    Object.keys(viewerProps).forEach(key => {
+        views.push(this.props.viewers[key].render(viewerProps[key], viewerState[key]));
+      });
+    return views;
+  }
+
+  handlePick(): void
+  {
+    const {actions} = this.props;
+    const alertParam: ClientActions.ParamAlert = { message: 'Pick Files', ok: 'Pick', cancel: 'Cancel' };
+    const pickParam: ClientActions.ParamPick = { alertParam: alertParam, multiple: true };
+
+    actions.fire(ClientActions.Open, { name: 'pick', params: pickParam });
+  }
+
   render(): any
   {
-    const { classes } = this.props;
+    const { classes, actions } = this.props;
 
     let result = (
       <MuiThemeProvider theme={MaterialTheme}>
         <div className={classes.root}>
-          {this.renderProfileDialog()}
-          {this.renderAlertDialog()}
-          {this.renderProgressDialog()}
-          {this.renderForgotDialog()}
-          {this.renderResetDialog()}
-          Hello World
+          {this.renderViewers()}
+          <Material.Button onClick={this.handlePick} >
+          Pick Files
+          </Material.Button>
+          {this.renderTable()}
         </div>
       </MuiThemeProvider>
     );
