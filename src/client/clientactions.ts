@@ -58,6 +58,9 @@ export const DoneResetForgot: number = ActionID++;
 export type ViewerProps = { [dialog: string]: any };
 export type ViewerState = { [dialog: string]: any };
 
+// Custom Analyze Actions
+export const SetRowToAnalyze: number = ActionID++;
+
 export interface ParamOpen
 {
   name: string,

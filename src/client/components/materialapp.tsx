@@ -26,6 +26,11 @@ import * as ProgressView from './progressview';
 import * as STV from './statictextview';
 import * as Hash from '../hash';
 
+import * as AnlzView from './analyticsview';
+
+export const appBarHeight: number = 48;       // Calculated sizes other other panes based on this
+export const appBackgroundColor: string = '#fafafa';
+
 let AppActionID = 5000;
 export const ActionProfileEditField = AppActionID++;
 export const ActionProfileClose = AppActionID++;
@@ -127,6 +132,7 @@ export interface AppProps
 
   // Stuff to display
   rows: any[];
+  selectedRow: string;
 
   clearState?: boolean;
   classes?: any;
@@ -412,10 +418,41 @@ export function AppStyles(theme: any): any
   });
 }
 
+export class TableActions extends ClientActions.ClientActions
+{
+  actions: ClientActions.ClientActions;
+
+  constructor(env: Environment, actions: ClientActions.ClientActions)
+  {
+    super(env);
+    this.actions = actions;
+  }
+
+  fire(id: number, arg?: any): boolean
+  {
+    switch (id)
+    {
+      case ClientActions.SelectionClear:
+        break;
+      case ClientActions.SelectionEmpty:
+        break;
+      case ClientActions.SelectionDouble: // id
+      case ClientActions.SelectionSet: // id
+        break;
+      case ClientActions.TableButtonSelect:
+        console.log(`analyze button for ${arg.id}, ${arg.name} clicked`);
+        this.actions.fire(ClientActions.SetRowToAnalyze, arg.id);
+        break;
+    }
+    return true;
+  }
+}
+
 class InternalMaterialApp extends React.Component<AppProps, AppState>
 {
   env: Environment;
   appActions: AppActions;
+  tableActions: TableActions;
   viewers: ViewerIndex;
 
   constructor(props: AppProps)
@@ -425,6 +462,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     this.env = props.actions.env;
 
     this.appActions = new AppActions(this);
+    this.tableActions = new TableActions(this.env, props.actions);
     props.actions.mixin(this.appActions);
 
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -500,14 +538,15 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     let Columns: TV.ColumnList = [
       { id: 'name', fieldType: 'string', disablePadding: true, label: 'Name' },
       { id: 'isjson', fieldType: 'boolean', disablePadding: true, label: 'J?' },
+      { id: 'analyze', fieldType: 'button', disablePadding: true, label: 'Analyze' },
     ];
     function Sorter(rows: TV.RowList, orderBy: string, order: TV.Ordering): TV.RowList
     {
       return TV.TableViewSorter(rows, Columns, orderBy, order);
     }
-    let tablerows = rows.map((r: any) => { return ({ name: r.name, isjson: r.json != null }) });
+    let tablerows = rows.map((r: any) => { return ({ id: r.id, name: r.name, isjson: r.json != null, analyze: 'Analyze' }) });
     let tvProps: TV.TableViewProps = {
-      actions: actions,
+      actions: this.tableActions,
       selection: null,
       columns: Columns,
       rows: tablerows,
@@ -523,6 +562,56 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     return ( <div className={classes.table}>
               <TV.TableView {...tvProps} />
              </div>);
+  }
+
+  renderAnalyticsView(): JSX.Element
+  {
+    const {rows} = this.props;
+
+    let rowToRender: any = this.props.rows.find((r: any) => r.id === this.props.selectedRow);
+    if (rowToRender === undefined) return null;
+
+    console.log(`renderAnalyticsView: ${rowToRender ? 'row to render' : 'no row to render'}`);
+
+    const stateXX: string = 'TODO';
+    const bHidePartisanData: boolean = false;
+
+    // HACK - set the designSize <<< cloned from updateDesignSize() in client.tsx
+    let el: any = document.getElementById('root');
+    let w: number = el.clientWidth;
+    let h: number = el.clientHeight;
+
+    let designSize: DW;
+    if (w < 376)       designSize = DW.PHONE;
+    else if (w < 475)  designSize = DW.PHONEPLUS;
+    else if (w < 575)  designSize = DW.NARROW;
+    else if (w < 645)  designSize = DW.NARROWPLUS;
+    else if (w < 725)  designSize = DW.NARROWPLUS2;
+    else if (w < 770)  designSize = DW.TABLET;
+    else if (w < 870)  designSize = DW.MEDIUM;
+    else if (w < 930)  designSize = DW.MEDIUMPLUS;
+    else if (w < 1155) designSize = DW.WIDE;
+    else if (w < 1250) designSize = DW.WIDER;
+    else               designSize = DW.WIDEST;
+
+    // if (designSize !== this.props.designSize)
+    // {
+    //   this.props.designSize = designSize;
+    //   this.forceRender();
+    // }
+
+    const {classes, env, roles, /* curModel, pageView, */ actions /*, designSize */, selectedRow} = this.props;
+    // const {redistrict, analyticsWrapper, sessionID} = curModel.derivedProps;
+    // const {state, datasource} = curModel.dataContext;
+
+    // return (<>Analytics</>);
+
+    return (<AnlzView.AnalyticsView
+      {...{actions, /* curModel, */ xx: stateXX, env, roles, designSize,
+        bHidePartisanData, openView: true, /* vaptype: analyticsWrapper.vapType(), */
+        row: rows[+selectedRow]
+      }}
+    />);
   }
 
   renderViewers(): any[]
@@ -558,6 +647,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
           Pick Files
           </Material.Button>
           {this.renderTable()}
+          {this.renderAnalyticsView()}
         </div>
       </MuiThemeProvider>
     );
@@ -595,6 +685,11 @@ let MaterialTheme: any = Material.createMuiTheme(
 let StyledMaterialApp: any = withStyles(AppStyles, { withTheme: true })(InternalMaterialApp);
 export const MaterialApp: new () => React.Component<AppProps, AppState> = StyledMaterialApp;
 
+export function isWide(designSize: DW): boolean
+{
+  return designSize >= DW.WIDE;
+}
+
 export function getTooltip(tip: string): any
 {
   return (
@@ -621,3 +716,4 @@ export function shortLabelOptionalTip(label: string): JSX.Element
     </Material.Tooltip> : <span>{labelP}</span>; 
 }
 
+export const MAPVIEW_ANLZ = 'anlz';

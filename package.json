@@ -1,7 +1,7 @@
 {
-  "name": "Template",
+  "name": "@alecramsay/redistricting-research",
   "version": "1.0.0",
-  "description": "Template Repository",
+  "description": "Redistricting Research",
   "main": "index.js",
   "scripts": {
     "start": "node server",
@@ -30,6 +30,7 @@
     "@dra2020/baseclient": "^1.0.54",
     "@dra2020/baseserver": "^1.0.30",
     "@dra2020/district-analytics": "^15.4.3",
+    "@dra2020/dra-analytics": "^3.3.2",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
