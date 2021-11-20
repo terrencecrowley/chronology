@@ -2,7 +2,6 @@
 
 // Core react imports
 import * as React from 'react';
-// declare var Plotly: any;
 
 // Material Imports
 import * as Material from '@material-ui/core';

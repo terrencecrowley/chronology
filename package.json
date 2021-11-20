@@ -1,7 +1,7 @@
 {
   "name": "@alecramsay/redistricting-research",
   "version": "1.0.0",
-  "description": "Redistricting Research",
+  "description": "Standalone app to run DRA analytics on a partisan profile",
   "main": "index.js",
   "scripts": {
     "start": "node server",

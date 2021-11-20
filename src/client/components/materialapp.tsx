@@ -594,21 +594,11 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     else if (w < 1250) designSize = DW.WIDER;
     else               designSize = DW.WIDEST;
 
-    // if (designSize !== this.props.designSize)
-    // {
-    //   this.props.designSize = designSize;
-    //   this.forceRender();
-    // }
-
-    const {classes, env, roles, /* curModel, pageView, */ actions /*, designSize */, selectedRow} = this.props;
-    // const {redistrict, analyticsWrapper, sessionID} = curModel.derivedProps;
-    // const {state, datasource} = curModel.dataContext;
-
-    // return (<>Analytics</>);
+    const {classes, env, roles, actions, selectedRow} = this.props;
 
     return (<AnlzView.AnalyticsView
-      {...{actions, /* curModel, */ xx: stateXX, env, roles, designSize,
-        bHidePartisanData, openView: true, /* vaptype: analyticsWrapper.vapType(), */
+      {...{actions, xx: stateXX, env, roles, designSize,
+        bHidePartisanData, openView: true,
         row: rows[+selectedRow]
       }}
     />);

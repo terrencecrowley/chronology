@@ -20,19 +20,13 @@ import classNames from 'classnames';
 
 // App libraries
 import { Environment } from '../env';
-// import { MapModel } from '../mapmodel';
 import * as MA from './materialapp';
 import * as AU from './anlzutil';
 import * as ClientActions from '../clientactions';
 
 // ... GENERAL ABOVE HERE ...
 
-// import * as A from '@dra2020/district-analytics';
-
 import { Partisan, Types, Utils } from '@dra2020/dra-analytics';
-
-// import sample from './sample-profile.json';
-// const sample = require('./sample-profile.json');
 
 
 // ENUMS, META DATA, & FORMATTING HELPERS FOR ANALYTICS & SCORING UI
@@ -52,15 +46,14 @@ const blue = '#0000ff';  // 'blue';
 export interface AnalyticsViewProps
 {
   xx: string;
-  // curModel: MapModel,
   env: Environment,
   roles: { [role: string]: boolean },
   bHidePartisanData: boolean,
   openView: boolean,
   actions: ClientActions.ClientActions,
   designSize: MA.DW,
-  // vaptype: MA.VAPTYPE,
 
+  // Added
   row: any,
 
   classes?: any,
@@ -129,9 +122,6 @@ interface AnalyticsViewState
   
 class InternalAnalyticsView extends React.Component<AnalyticsViewProps, AnalyticsViewState>
 {
-  // profile: A.Profile = null;          // Populate these when openView
-  // scorecard: A.Scorecard = null;
-
   name: string = null;
   profile: any = null;
   scorecard: Types.PartisanScorecard = null;
@@ -169,37 +159,17 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
 
   render(): any
   {
-    const {classes, actions, env, openView, /* curModel, */ designSize, /* bHidePartisanData, */ row} = this.props;
-    // const {analyticsWrapper} = curModel.derivedProps;
+    const {classes, actions, env, openView, designSize, row} = this.props;
 
     let links: {label: string, id: string}[] = [];
   
     links.push({label: svCurveSectionHeader, id: 'svcurvePanel'});
 
-    // if (openView)
-    // {
-    //   const bLog: boolean = true;
-
-    //   analyticsWrapper.analyzePlan(bLog);
-    //   if (!analyticsWrapper.analyzeResult)
-    //     return analyticsWrapper.analyticsErrorMessage;
-
-    //   const anlzSession = analyticsWrapper.analyticsSession;
-    //   // TODO - Bind profile & scorecard
-    //   this.profile = anlzSession.getPlanProfile(false);
-    //   this.scorecard = anlzSession.getPlanScorecard(false);
-    // }
-    
-    // this.profile = anlzSession.getPlanProfile(false);
-    // this.scorecard = anlzSession.getPlanScorecard(false);
-
     // GET THE PARTISAN PROFILE & COMPUTE THE PARTISAN SCORECARD
 
-    this.name = row.name;
-    // this.name = 'SAMPLE';   // HACK - Wire this up to the file name
+    this.name = row.name.slice(0,-5);  // HACK - remove the '.json'
 
     this.profile = row.json;
-    // this.profile = sample;  // HACK - Wire this up to the selected profile
 
     const bLog: boolean = true;
     const byDistrictVf: Types.VfArray = this.profile.byDistrict;
@@ -226,6 +196,7 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
 
   backToTopId(): string
   {
+    // TODO - Update this
     return 'svcurvePanel';
   }
 
@@ -325,8 +296,6 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     const v_r: number[] = rSVpoints.map(pt => pt.v);
     const s_r: number[] = rSVpoints.map(pt => pt.s);
 
-    // Pre-zoom the graph in on the region bounded by (0.5, 0.5) and (Vf, Sf)
-
     const Vf: number = this.profile.statewide;
     const Sf: number = Vf - this.scorecard.bias.prop;
 
@@ -336,6 +305,8 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     let svLayout = {};
     let svConfig = {};
 
+    // Pre-zoom the graph in on the region bounded by (0.5, 0.5) and (Vf, Sf)
+
     // Set x-axis & y-axis (full)
     let x_range: number[] = [0.0, 1.0];
     let y_range: number[] = [0.0, 1.0];
@@ -344,13 +315,11 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
 
     const lo_x: number = (Vf > 0.5) ? (0.5 - margin) : (Math.min(Vf, Sf) - margin);
     const hi_x: number = (Vf > 0.5) ? (Math.max(Vf, Sf) + margin) : (0.5 + margin);
-    // const lo_x: number = 0.0;
-    // const hi_x: number = 1.0;
 
     x_range = [lo_x, hi_x];
     y_range = x_range;
 
-    // end pre-zoom
+    // End pre-zoom
 
     // Make horizontal and vertical rules @ 0.50. And proportional rule.
 
