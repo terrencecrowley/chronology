@@ -305,16 +305,29 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     let svLayout = {};
     let svConfig = {};
 
-    // Pre-zoom the graph in on the region bounded by (0.5, 0.5) and (Vf, Sf)
+    // Pre-zoom the graph in on the square region that encompasses:
+    // * The center point of symmetry -- (0.5, 0.5)
+    // * Proportionality at Vf -- (Vf, Sf)
+    // * Seats bias -- (0.5, 0.5 - seats bias)
+    // * Votes bias -- (0.5 + votes bias, 0.5)
+    // * Extra credit: EG at Vf
 
-    // Set x-axis & y-axis (full)
     let x_range: number[] = [0.0, 1.0];
     let y_range: number[] = [0.0, 1.0];
 
-    const margin: number = 0.05;  // +/– 5%
+    const sym: number = 0.5;
+    const S_BS_50: number = 0.5 - this.scorecard.bias.bS50;  // More binding
+    const V_BV_50: number = 0.5 + this.scorecard.bias.bV50;  // More binding
+    const S_EG: number = 0.5 + (2.0 * (Vf - 0.5));
 
-    const lo_x: number = (Vf > 0.5) ? (0.5 - margin) : (Math.min(Vf, Sf) - margin);
-    const hi_x: number = (Vf > 0.5) ? (Math.max(Vf, Sf) + margin) : (0.5 + margin);
+    const margin: number = 0.025;  // +/– 2.5%
+
+    const lo_x: number = Math.min(sym, Vf, Sf, S_BS_50, V_BV_50, S_EG) - margin;
+    const hi_x: number = Math.max(sym, Vf, Sf, S_BS_50, V_BV_50, S_EG) + margin;
+    // const lo_x: number = (Vf > 0.5) ? (0.5 - margin) : (Math.min(Vf, Sf) - margin);
+    // const hi_x: number = (Vf > 0.5) ? (Math.max(Vf, Sf) + margin) : (0.5 + margin);
+    // const lo_x: number = 0.0;
+    // const hi_x: number = 1.0;
 
     x_range = [lo_x, hi_x];
     y_range = x_range;
