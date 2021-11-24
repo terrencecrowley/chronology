@@ -573,7 +573,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
     console.log(`renderAnalyticsView: ${rowToRender ? 'row to render' : 'no row to render'}`);
 
-    const stateXX: string = 'TODO';
+    const stateXX: string = 'XX';
     const bHidePartisanData: boolean = false;
 
     // HACK - set the designSize <<< cloned from updateDesignSize() in client.tsx
