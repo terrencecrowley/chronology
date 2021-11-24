@@ -58,7 +58,6 @@ class InternalMapNavButtons extends React.Component<MapNavButtonsProps, {}>
   {
     const {designSize} = this.props;
 
-    // TODO - Add buttons back for r-v graph, bias, and responsiveness sections
     const buttonsWidth: number = designSize < MA.DW.WIDER ? 180 : 450;
     return (
       <div style={{minWidth: buttonsWidth, textAlign: 'center'}}>

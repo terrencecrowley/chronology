@@ -834,18 +834,7 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
             {bExperimental ? AU.renderMetricRow(classes, '[Local Prop\']', lProp, AU.Meta.prop.units as AU.Units, "*** EXPERIMENTAL ***") : null}
             {bExperimental ? AU.renderMetricRow(classes, '[Local UE]', lUE, AU.Meta.unearnedS.units as AU.Units, "*** EXPERIMENTAL ***") : null}
 
-
-            {/* DELETED */}
-            {/* Added political geography metrics */}
-            {/* TODO - Pull out strings */}
-            {/* {bEnablePG ? AU.renderBlankMetricRow(classes) : null} */}
-            {/* {bEnablePG ? AU.renderMetricRow(classes, "Proportional seats", prFractional, AU.Units.Number, "The fractional Democratic seats for the map-wide vote share") : null} */}
-            {/* {bEnablePG ? AU.renderMetricRow(classes, "Closest seats", prFractional, AU.Units.Integer, "The whole Democratic seats closest to proportional") : null} */}
-            {/* {bEnablePG ? AU.renderMetricRow(classes, "Rounding bias", roundingBias, AU.Units.Percentage, `The bias due to rounding to whole seats`) : null} */}
-            {/* {bEnablePG ? AU.renderMetricRow(classes, "Geographic seats", pgSeats, AU.Units.Number, `The fractional Democratic seats implied by ${pgUnits} political geography`) : null} */}
-            {/* {bEnablePG ? AU.renderMetricRow(classes, "Geographic bias", pgBias, AU.Units.Percentage, `The bias due to ${pgUnits} political geography`) : null} */}
-            {/* {bEnablePG ? AU.renderMetricRow(classes, "Map seats", mapSeats, AU.Units.Number, "The fractional Democratic seats for the map") : null} */}
-            {/* {bEnablePG ? AU.renderMetricRow(classes, "Boundary bias", boundaryBias, AU.Units.Percentage, "The bias due to district lines") : null} */}
+            {/* DELETED political geography metrics */}
           </Material.TableBody>
         </Material.Table>
 
@@ -1400,7 +1389,7 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     const sortedIndexes = idVfpairs.map((pair: any) => pair[Id]);
 
     // Step 5 - Create a sorted array of district labels
-    const sortedLabels: string[] = ['1', '2', '3'];       // TODO
+    const sortedLabels: string[] = sortedIndexes.map((i: any) => i.toLocaleString());
 
     // const districtProps: Redistrict.DistrictPropArray = redistrict.safeDistrictProps();
     // const sortedLabels = sortedIndexes.map(id => AU.getDistrictLabel(districtProps, id));
