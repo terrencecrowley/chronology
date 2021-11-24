@@ -727,9 +727,8 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     const lopsidedOutcomes = this.scorecard.bias.lO;
   
     // EXPERIMENTAL
-    const lProp = this.scorecard.details['lProp'];
-    const lUE = this.scorecard.details['lUE'];
-    const bExperimental = true;
+    // const lProp = this.scorecard.details['lProp'];
+    // const lUE = this.scorecard.details['lUE'];
     // const bExperimental = roles.experimental;
 
     // Political geography
@@ -829,10 +828,11 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
             {AU.renderMetricRow(classes, AU.Meta.tOf.label, turnoutBias, AU.Meta.tOf.units as AU.Units, AU.Meta.tOf.description)}
             {AU.renderMetricRow(classes, AU.Meta.lO.label, lopsidedOutcomes, AU.Meta.lO.units as AU.Units, AU.Meta.lO.description)}
 
+            {/* DELETED */}
             {/* Added experimental metrics */}
-            {bExperimental ? AU.renderBlankMetricRow(classes) : null}
-            {bExperimental ? AU.renderMetricRow(classes, '[Local Prop\']', lProp, AU.Meta.prop.units as AU.Units, "*** EXPERIMENTAL ***") : null}
-            {bExperimental ? AU.renderMetricRow(classes, '[Local UE]', lUE, AU.Meta.unearnedS.units as AU.Units, "*** EXPERIMENTAL ***") : null}
+            {/* {bExperimental ? AU.renderBlankMetricRow(classes) : null} */}
+            {/* {bExperimental ? AU.renderMetricRow(classes, '[Local Prop\']', lProp, AU.Meta.prop.units as AU.Units, "*** EXPERIMENTAL ***") : null} */}
+            {/* {bExperimental ? AU.renderMetricRow(classes, '[Local UE]', lUE, AU.Meta.unearnedS.units as AU.Units, "*** EXPERIMENTAL ***") : null} */}
 
             {/* DELETED political geography metrics */}
           </Material.TableBody>
@@ -889,7 +889,7 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     if (!document.getElementById('rank-vote-graph') || !this.profile || !this.scorecard || !this.state.rvDirty)
       return;
 
-    const name = this.profile.name;
+    const name = this.name;
 
     // DATA - RANK-VOTE DIAGRAM
     let rvTraces = [];
@@ -908,7 +908,7 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
       // Traces for R wins & D wins points
 
       // Set district marker size between 1–12 px, based on the # of districts
-      const N = this.profile.nDistricts;
+      const N = this.profile.byDistrict.length;
       const W = diagramWidth * (2 / 3);
       const markerSize = Math.min(Math.max(1, Math.round(W / N)), 12);
 
@@ -996,7 +996,7 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
       const ruleXs = [...Array(nPts + 1).keys()].map(x => ((100 / nPts) * x) / 100);
 
       /// EDITED ///
-      const statewideVf = this.profile.partisanship.statewide;
+      const statewideVf = this.profile.statewide;
       const avgDWin = this.scorecard.averageDVf;
       const avgRWin = this.scorecard.averageRVf;
       const invertedAvgRWin = 1.0 - avgRWin;
