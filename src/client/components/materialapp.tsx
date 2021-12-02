@@ -440,7 +440,7 @@ export class TableActions extends ClientActions.ClientActions
       case ClientActions.SelectionSet: // id
         break;
       case ClientActions.TableButtonSelect:
-        console.log(`analyze button for ${arg.id}, ${arg.name} clicked`);
+        // console.log(`analyze button for ${arg.id}, ${arg.name} clicked`);
         this.actions.fire(ClientActions.SetRowToAnalyze, arg.id);
         break;
     }
@@ -571,7 +571,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     let rowToRender: any = this.props.rows.find((r: any) => r.id === this.props.selectedRow);
     if (rowToRender === undefined) return null;
 
-    console.log(`renderAnalyticsView: ${rowToRender ? 'row to render' : 'no row to render'}`);
+    // console.log(`renderAnalyticsView: ${rowToRender ? 'row to render' : 'no row to render'}`);
 
     const stateXX: string = 'XX';
     const bHidePartisanData: boolean = false;

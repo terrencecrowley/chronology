@@ -26,7 +26,7 @@ import * as ClientActions from '../clientactions';
 
 // ... GENERAL ABOVE HERE ...
 
-import { Partisan, Types, Utils } from '@dra2020/dra-analytics';
+import { Partisan, Types, Rate } from '@dra2020/dra-analytics';
 
 const numWords = require('num-words');
 
@@ -361,14 +361,10 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     const V_BV_50: number = 0.5 + this.scorecard.bias.bV50;  // More binding
     const S_EG: number = 0.5 + (2.0 * (Vf - 0.5));
 
-    const margin: number = 0.025;  // +/– 2.5%
+    const margin: number = 0.05;  // +/– 5%
 
     const lo_x: number = Math.min(sym, Vf, Sf, S_BS_50, V_BV_50, S_EG) - margin;
     const hi_x: number = Math.max(sym, Vf, Sf, S_BS_50, V_BV_50, S_EG) + margin;
-    // const lo_x: number = (Vf > 0.5) ? (0.5 - margin) : (Math.min(Vf, Sf) - margin);
-    // const hi_x: number = (Vf > 0.5) ? (Math.max(Vf, Sf) + margin) : (0.5 + margin);
-    // const lo_x: number = 0.0;
-    // const hi_x: number = 1.0;
 
     x_range = [lo_x, hi_x];
     y_range = x_range;
@@ -627,15 +623,15 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     const svSize = AU.plotWidth(designSize) - 25;
 
     // Place the legend based on whether & where the plot is pre-zoomed
-    // - If (Vf > 0.5) => lower right
-    // - If (Vf < 0.5) => upper left
+    // - If (Sf > 0.5) => lower right
+    // - If (Sf < 0.5) => upper left
     // - x,y units are normalized, not Vf, Sf
 
     const tab = 0.02;  // 2% indent margin
-    const x_anchor = (Vf > 0.5) ? 'right' : 'left';
-    const y_anchor = (Vf > 0.5) ?  'bottom' : 'top';
-    const x_pos = (Vf > 0.5) ? 1 - tab : 0 + tab;
-    const y_pos = (Vf > 0.5) ? 0 + tab : 1 - tab;
+    const x_anchor = (Sf > 0.5) ? 'right' : 'left';
+    const y_anchor = (Sf > 0.5) ?  'bottom' : 'top';
+    const x_pos = (Sf > 0.5) ? 1 - tab : 0 + tab;
+    const y_pos = (Sf > 0.5) ? 0 + tab : 1 - tab;
 
     svLayout = {
       title: 'Seats-Votes Curve: ' + name,
@@ -725,18 +721,29 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     const meanMedian = this.scorecard.bias.mMd as number;
     const turnoutBias = this.scorecard.bias.tOf as number;
     const lopsidedOutcomes = this.scorecard.bias.lO;
+
+    // Rating partisan bias -- moved here from radarview.tsx
+
+    const seatsBias = this.scorecard.bias.bS50;
+    const votesBias = this.scorecard.bias.bV50;
+    const bPartisanBiasRating = (seatsBias !== undefined) && (votesBias !== undefined);
+    let partisanBiasRating: number;
+
+    if (bPartisanBiasRating) 
+    {
+      const seatsBiasRating = Rate.ratePartisanBias(seatsBias, 0.06);  // Bound to dra-analytics directly vs. via district-analytics
+      const votesBiasRating = Rate.ratePartisanBias(votesBias, 0.02);  // Ditto
+
+      partisanBiasRating = Math.round((seatsBiasRating + votesBiasRating) / 2);
+    }    
   
     // EXPERIMENTAL
-    // const lProp = this.scorecard.details['lProp'];
-    // const lUE = this.scorecard.details['lUE'];
-    // const bExperimental = roles.experimental;
+
+    /// DELETED ///
 
     // Political geography
   
     /// DELETED ///
-
-    // const anlzSession = analyticsWrapper.analyticsSession;
-    // const reqs = anlzSession.getRequirementsChecklist(false);
 
     // HACK - Hardcoded this ...
     const reqs: AU.RequirementsChecklist = {
@@ -775,35 +782,9 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     let notes: any[] = [];
     notes.push(AU.Meta.biasConvention.description);
 
-    // let planScoreButton: JSX.Element = (
-    //   <Material.Button
-    //     className={classNames(classes.pickerRoot)}
-    //     onClick={() => this.handlePlanScore()}
-    //   >
-    //     <Material.Typography className={classes.font875}>PlanScore</Material.Typography>
-    //   </Material.Button>
-    // );
+    // Plan Score button 
 
-    // const planscoreNotice: JSX.Element = (
-    //   <Material.TableCell className={classNames(classes.cellNoBorder, classes.font1rem, classes.cellPadding)}>
-    //     {'Use '}
-    //     <Material.Link href='https://planscore.org' target='_blank' rel='noopener'>
-    //       {'PlanScore'}
-    //     </Material.Link>
-    //     {' to further assess the degree to which a map is gerrymandered.'}
-    //     {/*<Material.Link href='https://medium.com/dra-2020/how-to-planscore-43771ec3d729' target='_blank' rel='noopener'>
-    //       {'here'}
-    //     </Material.Link>*/}
-    //     {planScoreButton}
-    //   </Material.TableCell>
-    // );
-    // notes.push(planscoreNotice);
-
-    // if (bEnablePG && pg.showNote)
-    // {
-    //   notes.push(`The fractional Democratic seats & boundary bias implied by precinct political geography are ${A.trim(pg.precinctPG, 2)} and ${AU.formatPercent(boundaryBiasAlt, 2)}.`);
-    //   // notes.push(`The fractional Democratic seats implied by ${pgUnitsAlt} political geography is ${A.trim(pgSeatsAlt, 2)}. `);
-    // }
+    /// DELETED /// 
 
     const advancedBiasIntro = 'These are some prominent measures of partisan bias.';
 
@@ -813,26 +794,28 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
         <Material.Table className={classNames(classes.scoringTable)}>
           <Material.TableBody>
             {AU.renderMetricHeader(classes, AU.Meta.metric.label, '', AU.Meta.description.label, [190, 60])}
-            {AU.renderMetricRow(classes, AU.Meta.bS50.label, seatsBias50, AU.Meta.bS50.units as AU.Units, AU.Meta.bS50.description)}
-            {AU.renderMetricRow(classes, AU.Meta.bV50.label, votesBias50, AU.Meta.bV50.units as AU.Units, AU.Meta.bV50.description)}
-            {AU.renderMetricRow(classes, AU.Meta.decl.label, declination, AU.Meta.decl.units as AU.Units, AU.Meta.decl.description, classes.extraPaddingRightDecl)}
-            {AU.renderMetricRow(classes, AU.Meta.gSym.label, globalSymmetry, AU.Meta.gSym.units as AU.Units, AU.Meta.gSym.description)}
+
+            {/* Reliable measures of bias */}
+            {AU.renderMetricRow(classes, AU.Meta.prop.label, prop, AU.Meta.prop.units as AU.Units, AU.Meta.prop.description)}
+            {AU.renderMetricRow(classes, AU.Meta.eG.label, efficiencyGap, AU.Meta.eG.units as AU.Units, AU.Meta.eG.description)}
             {AU.renderMetricRow(classes, AU.Meta.gamma.label, gamma, AU.Meta.gamma.units as AU.Units, AU.Meta.gamma.description)}
 
+            {/* Measures of bias not reliable in unbalanced states */}
             {AU.renderBlankMetricRow(classes)}
-
-            {AU.renderMetricRow(classes, AU.Meta.eG.label, efficiencyGap, AU.Meta.eG.units as AU.Units, AU.Meta.eG.description)}
+            {AU.renderMetricRow(classes, AU.Meta.bS50.label, seatsBias50, AU.Meta.bS50.units as AU.Units, AU.Meta.bS50.description)}
+            {AU.renderMetricRow(classes, AU.Meta.bV50.label, votesBias50, AU.Meta.bV50.units as AU.Units, AU.Meta.bV50.description)}
             {AU.renderMetricRow(classes, AU.Meta.bSV.label, seatsBiasV, AU.Meta.bSV.units as AU.Units, AU.Meta.bSV.description)}
-            {AU.renderMetricRow(classes, AU.Meta.prop.label, prop, AU.Meta.prop.units as AU.Units, AU.Meta.prop.description)}
+            {AU.renderMetricRow(classes, AU.Meta.gSym.label, globalSymmetry, AU.Meta.gSym.units as AU.Units, AU.Meta.gSym.description)}
+            {AU.renderMetricRow(classes, 'Partisan bias rating', partisanBiasRating, AU.Units.Integer, "The combined rating of seats bias & votes bias")}
+
+            {/* Measures of asymmetry */}
+            {AU.renderBlankMetricRow(classes)}
+            {AU.renderMetricRow(classes, AU.Meta.decl.label, declination, AU.Meta.decl.units as AU.Units, AU.Meta.decl.description, classes.extraPaddingRightDecl)}
             {AU.renderMetricRow(classes, AU.Meta.mM.label, meanMedian, AU.Meta.mM.units as AU.Units, AU.Meta.mM.description)}
             {AU.renderMetricRow(classes, AU.Meta.tOf.label, turnoutBias, AU.Meta.tOf.units as AU.Units, AU.Meta.tOf.description)}
             {AU.renderMetricRow(classes, AU.Meta.lO.label, lopsidedOutcomes, AU.Meta.lO.units as AU.Units, AU.Meta.lO.description)}
 
-            {/* DELETED */}
-            {/* Added experimental metrics */}
-            {/* {bExperimental ? AU.renderBlankMetricRow(classes) : null} */}
-            {/* {bExperimental ? AU.renderMetricRow(classes, '[Local Prop\']', lProp, AU.Meta.prop.units as AU.Units, "*** EXPERIMENTAL ***") : null} */}
-            {/* {bExperimental ? AU.renderMetricRow(classes, '[Local UE]', lUE, AU.Meta.unearnedS.units as AU.Units, "*** EXPERIMENTAL ***") : null} */}
+            {/* DELETED experimental metrics */}
 
             {/* DELETED political geography metrics */}
           </Material.TableBody>
@@ -856,7 +839,7 @@ class InternalAnalyticsView extends React.Component<AnalyticsViewProps, Analytic
     const responsiveDistricts = this.scorecard.responsiveness.rD;
     const responsiveness = this.scorecard.responsiveness.littleR;
     const overallResponsiveness = this.scorecard.responsiveness.bigR;
-    // const minimalInverseResponsiveness = this.scorecard.partisan.responsiveness.mIR;
+    // const minimalInverseResponsiveness = this.scorecard.responsiveness.mIR;
 
     // let notes: string[] = [];
 
