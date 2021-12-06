@@ -26,30 +26,6 @@ import * as ProgressView from './progressview';
 import * as STV from './statictextview';
 import * as Hash from '../hash';
 
-let AppActionID = 5000;
-export const ActionProfileEditField = AppActionID++;
-export const ActionProfileClose = AppActionID++;
-export const ActionProfileOpen = AppActionID++;
-export const ActionProfile = AppActionID++;
-export const ActionLoginOpen = AppActionID++;
-export const ActionLogin = AppActionID++;
-export const ActionSignupOpen = AppActionID++;
-export const ActionSignup = AppActionID++;
-export const ActionVisitorClose = AppActionID++;
-export const ActionVisitor = AppActionID++;
-export const ActionForgotOpen = AppActionID++;
-export const ActionForgotClose = AppActionID++;
-export const ActionForgot = AppActionID++;
-export const ActionResetOpen = AppActionID++;
-export const ActionResetClose = AppActionID++;
-export const ActionReset = AppActionID++;
-export const ActionVerifyEmail = AppActionID++;
-export const ActionAlertOpen = AppActionID++;
-export const ActionAlertClose = AppActionID++;
-export const ActionProgressOpen = AppActionID++;
-export const ActionProgressClose = AppActionID++;
-export const ActionLogout = AppActionID++;
-
 export enum DW      // Enum representing size ranges for Available Width
 {
   PHONE,
@@ -90,7 +66,7 @@ export class AppActions extends ClientActions.ClientActions
         this.fireIcon(arg as ClientActions.ParamTableIcon);
         break;
 
-      case -1: // If we ever have any
+      case ClientActions.TextChange:
         return this.app.fire(id, arg);
 
       default:
@@ -133,9 +109,10 @@ export interface AppProps
   theme?: any;
 }
 
-// Items that purely control visibility
+// Mostly text fields for React cursor management issues
 export interface AppState
 {
+  textFields: ClientActions.TextFields;
 }
 
 const shadingColor = MuiColors.indigo[50];
@@ -429,30 +406,22 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handlePick = this.handlePick.bind(this);
+
+    this.state = { textFields: {} };
   }
 
   fire(id: number, e?: any): boolean
   {
     const { env, actions } = this.props;
+    const { textFields } = this.state;
     const u = env.account.user;
     let param: any;
 
     switch (id)
     {
-      case ActionAlertOpen:
-        actions.fire(ClientActions.OpenAlert, e);
-        break;
-
-      case ActionAlertClose:
-        actions.fire(ClientActions.CloseAlert);
-        break;
-
-      case ActionProgressOpen:
-        actions.fire(ClientActions.OpenProgress, e);
-        break;
-
-      case ActionProgressClose:
-        actions.fire(ClientActions.CloseProgress);
+      case ClientActions.TextChange:
+        textFields[e.target.name] = e.target.value;
+        this.setState({ textFields: textFields });
         break;
 
       default:
@@ -527,12 +496,12 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
   renderViewers(): any[]
   {
-    const { viewerProps } = this.props;
-    const { viewerState } = this.props;
+    const { viewerProps, viewerState } = this.props;
+    const { textFields } = this.state;
 
     let views: any[] = [];
     Object.keys(viewerProps).forEach(key => {
-        views.push(this.props.viewers[key].render(viewerProps[key], viewerState[key]));
+        views.push(this.props.viewers[key].render(viewerProps[key], viewerState[key], textFields));
       });
     return views;
   }
