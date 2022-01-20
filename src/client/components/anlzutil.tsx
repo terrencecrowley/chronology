@@ -477,6 +477,13 @@ export function Styles(theme: any): any
     switchLabelSmall: {
       fontSize: '0.875rem',
     },
+    backButton: {
+      borderRadius: 10,
+      padding: 4,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      paddingRight: 16,
+    },
   }));
 }
 
@@ -977,14 +984,27 @@ export function renderNavLinkBar(classes: any, actions: ClientActions.ClientActi
   links: {label: string, id: string}[], infoUrl: string, infoTooltip: string): JSX.Element
 {
   const buttonsWidth: number = designSize < MA.DW.WIDER ? 146 : 356;
+
+  const backButton: JSX.Element = (
+    <Material.IconButton className={classNames(classes.backButton)}
+      color='inherit'
+      onClick={() => actions.fire(ClientActions.SetViewMode, MA.VIEW_FILELIST)}
+      aria-label={'Back'}>
+      <Icons.ArrowLeft fontSize='large'/>
+      <Material.Typography style={{paddingLeft: 2}}>
+        Back
+      </Material.Typography>
+    </Material.IconButton>);
+
+
   return (
     <Material.Table size='small' padding='none' style={{height: navBarHeight}}>
       <Material.TableRow>
         <Material.TableCell className={classNames(classes.cellNoBorder)}>
           {renderLinks(classes, links, designSize)}
         </Material.TableCell>
-        <Material.TableCell className={classNames(classes.cellNoBorder)} align='center' style={{width: buttonsWidth}}>
-          <MNB.MapNavButtons {...{actions, curMapView, /* curModel, */ designSize}}/>
+        <Material.TableCell className={classNames(classes.cellNoBorder)} align='center' style={{}}>
+          {backButton /*<MNB.MapNavButtons {...{actions, curMapView, designSize}}/>*/}
         </Material.TableCell>
         <Material.TableCell className={classNames(classes.cellNoBorder)} align='center' style={{width: 40, paddingRight: 5}}>
           <Material.Tooltip title={MA.getTooltip(infoTooltip)}>

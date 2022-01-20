@@ -63,6 +63,10 @@ class Actions extends ClientActions.ClientActions
       case ClientActions.SetRowToAnalyze:
         this.app.actionSetRowToAnalyze(arg);
         break;
+      
+      case ClientActions.SetViewMode:
+        this.app.actionSetViewMode(arg);
+        break;
     }
 
     return handled ? true : this._fire(id, arg);
@@ -108,6 +112,7 @@ class App
       roles: {},
       actions: this.actions,
       isAnon: false,
+      viewMode: MA.VIEW_FILELIST,
 
       // General
       viewerProps: {},
@@ -237,6 +242,7 @@ class App
   {
     delete this.props.viewerProps[arg.name];
     delete this.props.viewerState[arg.name];
+    this.props.viewMode = MA.VIEW_FILELIST
     this.forceRender();
   }
 
@@ -258,6 +264,13 @@ class App
   actionSetRowToAnalyze(id: string): void
   {
     this.props.selectedRow = id;
+    this.props.viewMode = MA.MAPVIEW_ANLZ;
+    this.forceRender();
+  }
+
+  actionSetViewMode(viewMode: string): void
+  {
+    this.props.viewMode = viewMode;
     this.forceRender();
   }
 

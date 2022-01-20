@@ -1003,8 +1003,9 @@ class InternalTableView extends React.Component<TableViewProps, TableViewState>
         props.scrollToIndex = i;
     }
 
+    const outerH = outerHeight ? outerHeight : 'calc(100vh - 100px)';
     return (
-      <div id={'tableview'} className={classes.tableWrapper} style={{height: outerHeight}}>
+      <div id={'tableview'} className={classes.tableWrapper} style={{height: outerH}}>
         <RV.AutoSizer>
           {({ height, width }) => (
             <RV.Table className={classes.virtualTable} width={width} height={height} {...props} >

@@ -120,6 +120,7 @@ export interface AppProps
   env: Environment;
   title: string;
   actions: ClientActions.ClientActions;
+  viewMode: string;     // Mode: VIEW_FILELIST or MAPVIEW_ANLZ
 
   // Dialogs
   viewers: ViewerIndex;
@@ -534,7 +535,11 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
   renderTable(): any
   {
-    const {classes, actions, rows} = this.props;
+    const {classes, actions, rows, viewMode} = this.props;
+
+    if (viewMode !== VIEW_FILELIST)
+      return null;
+    
     let Columns: TV.ColumnList = [
       { id: 'name', fieldType: 'string', disablePadding: true, label: 'Name' },
       { id: 'isjson', fieldType: 'boolean', disablePadding: true, label: 'J?' },
@@ -553,7 +558,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
       sorter: Sorter,
       ordering: 'ASC',
       orderBy: 'name',
-      outerHeight: "400px",
+      //outerHeight: "400px",
       rowHeight: 36,
       disableHeader: false,
       showCheck: false,
@@ -566,10 +571,10 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
   renderAnalyticsView(): JSX.Element
   {
-    const {rows} = this.props;
+    const {classes, env, roles, actions, rows, selectedRow, viewMode} = this.props;
 
-    let rowToRender: any = this.props.rows.find((r: any) => r.id === this.props.selectedRow);
-    if (rowToRender === undefined) return null;
+    let rowToRender: any = this.props.rows.find((r: any) => r.id === selectedRow);
+    if (viewMode === VIEW_FILELIST || rowToRender === undefined) return null;
 
     // console.log(`renderAnalyticsView: ${rowToRender ? 'row to render' : 'no row to render'}`);
 
@@ -593,8 +598,6 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     else if (w < 1155) designSize = DW.WIDE;
     else if (w < 1250) designSize = DW.WIDER;
     else               designSize = DW.WIDEST;
-
-    const {classes, env, roles, actions, selectedRow} = this.props;
 
     return (<AnlzView.AnalyticsView
       {...{actions, xx: stateXX, env, roles, designSize,
@@ -707,3 +710,4 @@ export function shortLabelOptionalTip(label: string): JSX.Element
 }
 
 export const MAPVIEW_ANLZ = 'anlz';
+export const VIEW_FILELIST = 'filelist';
