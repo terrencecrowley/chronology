@@ -11,11 +11,11 @@ import * as MuiColors from '@material-ui/core/colors';
 import classNames from 'classnames';
 
 // Core OT
-import { OT, Util, Poly, G } from "@dra2020/baseclient";
-import * as DT from '@dra2020/dra-types';
+import {OT, Util, Poly, G} from "@dra2020/baseclient";
+// import * as DT from '@dra2020/dra-types';
 
 // App libraries
-import { Environment } from '../env';
+import {Environment} from '../env';
 import * as ClientActions from '../clientactions';
 import * as TV from './tableview';
 import * as Profile from './profileview';
@@ -109,11 +109,11 @@ export class AppActions extends ClientActions.ClientActions
 export interface Viewer
 {
   name: string,
-  open: (appProps: AppProps, params: any) => { props: any, state: any },
+  open: (appProps: AppProps, params: any) => {props: any, state: any},
   render: (props: any, state: any) => any,
 }
 
-export type ViewerIndex = { [name: string]: Viewer };
+export type ViewerIndex = {[name: string]: Viewer};
 
 export interface AppProps
 {
@@ -129,7 +129,7 @@ export interface AppProps
 
   // Home or per-session
   isAnon: boolean;
-  roles: { [role: string]: boolean };
+  roles: {[role: string]: boolean};
 
   // Stuff to display
   rows: any[];
@@ -472,7 +472,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
   fire(id: number, e?: any): boolean
   {
-    const { env, actions } = this.props;
+    const {env, actions} = this.props;
     const u = env.account.user;
     let param: any;
 
@@ -539,17 +539,17 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
     if (viewMode !== VIEW_FILELIST)
       return null;
-    
+
     let Columns: TV.ColumnList = [
-      { id: 'name', fieldType: 'string', disablePadding: true, label: 'Name' },
-      { id: 'isjson', fieldType: 'boolean', disablePadding: true, label: 'J?' },
-      { id: 'analyze', fieldType: 'button', disablePadding: true, label: 'Analyze' },
+      {id: 'name', fieldType: 'string', disablePadding: true, label: 'Name'},
+      {id: 'isjson', fieldType: 'boolean', disablePadding: true, label: 'J?'},
+      {id: 'analyze', fieldType: 'button', disablePadding: true, label: 'Analyze'},
     ];
     function Sorter(rows: TV.RowList, orderBy: string, order: TV.Ordering): TV.RowList
     {
       return TV.TableViewSorter(rows, Columns, orderBy, order);
     }
-    let tablerows = rows.map((r: any) => { return ({ id: r.id, name: r.name, isjson: r.json != null, analyze: 'Analyze' }) });
+    let tablerows = rows.map((r: any) => {return ({id: r.id, name: r.name, isjson: r.json != null, analyze: 'Analyze'})});
     let tvProps: TV.TableViewProps = {
       actions: this.tableActions,
       selection: null,
@@ -564,9 +564,9 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
       showCheck: false,
     };
 
-    return ( <div className={classes.table}>
-              <TV.TableView {...tvProps} />
-             </div>);
+    return (<div className={classes.table}>
+      <TV.TableView {...tvProps} />
+    </div>);
   }
 
   renderAnalyticsView(): JSX.Element
@@ -587,20 +587,21 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     let h: number = el.clientHeight;
 
     let designSize: DW;
-    if (w < 376)       designSize = DW.PHONE;
-    else if (w < 475)  designSize = DW.PHONEPLUS;
-    else if (w < 575)  designSize = DW.NARROW;
-    else if (w < 645)  designSize = DW.NARROWPLUS;
-    else if (w < 725)  designSize = DW.NARROWPLUS2;
-    else if (w < 770)  designSize = DW.TABLET;
-    else if (w < 870)  designSize = DW.MEDIUM;
-    else if (w < 930)  designSize = DW.MEDIUMPLUS;
+    if (w < 376) designSize = DW.PHONE;
+    else if (w < 475) designSize = DW.PHONEPLUS;
+    else if (w < 575) designSize = DW.NARROW;
+    else if (w < 645) designSize = DW.NARROWPLUS;
+    else if (w < 725) designSize = DW.NARROWPLUS2;
+    else if (w < 770) designSize = DW.TABLET;
+    else if (w < 870) designSize = DW.MEDIUM;
+    else if (w < 930) designSize = DW.MEDIUMPLUS;
     else if (w < 1155) designSize = DW.WIDE;
     else if (w < 1250) designSize = DW.WIDER;
-    else               designSize = DW.WIDEST;
+    else designSize = DW.WIDEST;
 
     return (<AnlzView.AnalyticsView
-      {...{actions, xx: stateXX, env, roles, designSize,
+      {...{
+        actions, xx: stateXX, env, roles, designSize,
         bHidePartisanData, openView: true,
         row: rows[+selectedRow]
       }}
@@ -609,35 +610,36 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
   renderViewers(): any[]
   {
-    const { viewerProps } = this.props;
-    const { viewerState } = this.props;
+    const {viewerProps} = this.props;
+    const {viewerState} = this.props;
 
     let views: any[] = [];
-    Object.keys(viewerProps).forEach(key => {
-        views.push(this.props.viewers[key].render(viewerProps[key], viewerState[key]));
-      });
+    Object.keys(viewerProps).forEach(key =>
+    {
+      views.push(this.props.viewers[key].render(viewerProps[key], viewerState[key]));
+    });
     return views;
   }
 
   handlePick(): void
   {
     const {actions} = this.props;
-    const alertParam: ClientActions.ParamAlert = { message: 'Pick Files', ok: 'Pick', cancel: 'Cancel' };
-    const pickParam: ClientActions.ParamPick = { alertParam: alertParam, multiple: true };
+    const alertParam: ClientActions.ParamAlert = {message: 'Pick Files', ok: 'Pick', cancel: 'Cancel'};
+    const pickParam: ClientActions.ParamPick = {alertParam: alertParam, multiple: true};
 
-    actions.fire(ClientActions.Open, { name: 'pick', params: pickParam });
+    actions.fire(ClientActions.Open, {name: 'pick', params: pickParam});
   }
 
   render(): any
   {
-    const { classes, actions } = this.props;
+    const {classes, actions} = this.props;
 
     let result = (
       <MuiThemeProvider theme={MaterialTheme}>
         <div className={classes.root}>
           {this.renderViewers()}
           <Material.Button onClick={this.handlePick} >
-          Pick Files
+            Pick Files
           </Material.Button>
           {this.renderTable()}
           {this.renderAnalyticsView()}
@@ -675,7 +677,7 @@ let MaterialTheme: any = Material.createMuiTheme(
   }
 );
 
-let StyledMaterialApp: any = withStyles(AppStyles, { withTheme: true })(InternalMaterialApp);
+let StyledMaterialApp: any = withStyles(AppStyles, {withTheme: true})(InternalMaterialApp);
 export const MaterialApp: new () => React.Component<AppProps, AppState> = StyledMaterialApp;
 
 export function isWide(designSize: DW): boolean
@@ -686,7 +688,7 @@ export function isWide(designSize: DW): boolean
 export function getTooltip(tip: string): any
 {
   return (
-    <Material.Typography style={{ fontSize: '0.8rem', color: 'white' }}>
+    <Material.Typography style={{fontSize: '0.8rem', color: 'white'}}>
       {tip}
     </Material.Typography>
   )
@@ -706,7 +708,7 @@ export function shortLabelOptionalTip(label: string): JSX.Element
   return elided ?
     <Material.Tooltip title={getTooltip(label)}>
       <span>{labelP}</span>
-    </Material.Tooltip> : <span>{labelP}</span>; 
+    </Material.Tooltip> : <span>{labelP}</span>;
 }
 
 export const MAPVIEW_ANLZ = 'anlz';
