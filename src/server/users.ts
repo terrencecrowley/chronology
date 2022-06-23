@@ -73,6 +73,7 @@ export class FsmFind extends FSM.Fsm
         this.user = this.env.userManager.mru.find(filter.id) as IUser;
       else
         this.user = null;
+      /* REMOVE SERVICE DEPENDENCIES
       if (this.user == null)
       {
         this.find = this.env.db.createFind(col, filter);
@@ -86,6 +87,8 @@ export class FsmFind extends FSM.Fsm
           this.waitOn(this.findLower);
         }
       }
+      */
+      this.setState(FSM.FSM_DONE);
     }
 
   get env(): Environment { return this._env as Environment }
@@ -125,6 +128,8 @@ export class FsmUpdate extends FSM.Fsm
       super(env);
       this.query = query;
       this.set = set;
+      /* REMOVE SERVICE DEPENDENCIES */
+      this.setState(FSM.FSM_ERROR);
     }
 
   get env(): Environment { return this._env as Environment }
@@ -205,8 +210,10 @@ export class UserManager
   constructor(env: Environment)
     {
       this.env = env;
+      /* REMOVE SERVICE DEPENDENCIES
       this.col = this.env.db.createCollection('users', Schemas['users']);
       this.env.db.createIndex(this.col, 'email');
+      */
       this.names = {};
       this.mru = new MRU.ExpiringMRU({ latency: 1000 * 60 * 60 });
       specialAdmin = this.env.context.xstring('special_admin');

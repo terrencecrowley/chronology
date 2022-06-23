@@ -151,6 +151,7 @@ export function create(): Environment
   env.log = LogClient.create(env);
   env.log.stamp({ kind: 'misc', _build: process.env.npm_package_version });
 
+  /* DONT INITIALIZE SERVICE DEPENDENCIES
   // Announce mode
   if (env.context.xflag('production'))
     console.log('Mode: PRODUCTION: running against production DynamoDB databases and S3 buckets');
@@ -174,6 +175,7 @@ export function create(): Environment
         cols[name] = env.db.createCollection(name, Schemas[name]);
       return cols[name];
     };
+  SERVICE DEPENDENCIES */
 
   // Http session store
   env.storeManager = new Store.StoreManager(env);

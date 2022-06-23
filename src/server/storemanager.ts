@@ -63,8 +63,11 @@ class FsmFull extends FSM.Fsm
   {
     super(env);
     this.query = null;
+    /* REMOVE SERVICE DEPENDENCIES
     this.waitOn(this.env.db);
     this.waitOn(this.env.storeManager.col);
+    */
+    this.setState(FSM.FSM_DONE);
   }
 
   get env(): Environment { return this._env as Environment; }
@@ -97,8 +100,11 @@ class FsmClear extends FSM.Fsm
   {
     super(env);
     this.query = null;
+    /* REMOVE SERVICE DEPENDENCIES
     this.waitOn(this.env.db);
     this.waitOn(this.env.storeManager.col);
+    */
+    this.setState(FSM.FSM_DONE);
   }
 
   get env(): Environment { return this._env as Environment; }
@@ -154,12 +160,15 @@ class FsmFind extends FSM.Fsm
       {
         case FSM.FSM_STARTING:
           this.session = this.env.storeManager.mru.find(this.sid);
+          this.setState(FSM.FSM_DONE);
+          /* REMOVE SERVICE DEPENDENCY
           if (this.session == null)
           {
             this.fsmFind = this.env.db.createFind(this.env.storeManager.col, { id: this.sid });
             this.waitOn(this.fsmFind);
           }
           this.setState(FSM.FSM_PENDING);
+          */
           break;
 
         case FSM.FSM_PENDING:
@@ -209,6 +218,8 @@ class FsmTouch extends FSM.Fsm
     this.fsmFind = null;
     if (! expiresSoon(session))
       this.setState(FSM.FSM_DONE);
+    /* REMOVE SERVICE DEPENDENCY */
+    this.setState(FSM.FSM_DONE);
   }
 
   get env(): Environment { return this._env as Environment; }
@@ -261,7 +272,9 @@ export class StoreManager extends session.Store
 
       env.storeManager = this;
       this.env = env;
+      /* REMOVE SERVICE DEPENDENCY
       this.col = this.env.db.createCollection('session', Schemas['session']);
+      */
       this.bEmit = true;
       this.mru = new MRU.ExpiringMRU({ latency: 1000 * 60 * 60 * 4, limit: 2000 });
 
@@ -320,8 +333,11 @@ export class StoreManager extends session.Store
   createDelete(sid: string): DB.DBDelete
   {
     this.mru.remove(sid);
+    /* REMOVE SERVICE DEPENDENCY
     this.flushRemoteMRU(sid);
     return this.env.db.createDelete(this.col, { id: sid });
+    */
+    return null;
   }
 
   all(cb: AllCallback): void
@@ -417,6 +433,7 @@ export class StoreManager extends session.Store
     //console.log(`store: set(${sid}): ${JSON.stringify(session)}`);
     this.checkConnected();
 
+    /* REMOVE SERVICE DEPENDENCY
     // Flush from other instances
     this.flushRemoteMRU(sid);
 
@@ -437,10 +454,14 @@ export class StoreManager extends session.Store
           cb(null);
         }
       });
+    */
+    this.mru.refresh(sid, session);
+    cb(null);
   }
 
   touch(sid: string, session: any, cb: ErrCallback): void
   {
+    /* REMOVE SERVICE DEPENDENCY
     //console.log(`store: touch(${sid}): ${JSON.stringify(session)}`);
     this.checkConnected();
     let fsmTouch = new FsmTouch(this.env, sid, session);
@@ -453,6 +474,8 @@ export class StoreManager extends session.Store
           cb(null);
         }
       });
+    */
+    cb(null);
   }
 
   close(): void
