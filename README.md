@@ -1,6 +1,6 @@
-# Redistricting Research
+# DRA Analytics App
 
-This app lets you to run most of DRA's partisan analytics on election profiles that don't have associated DRA maps.
+This standalone app lets you to run most of DRA's partisan analytics on election profiles that don't have associated DRA maps.
 
 It is a cloned subset of the analytics on the *Advanced* tab in DRA.
 
