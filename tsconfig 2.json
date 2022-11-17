@@ -1,13 +1,14 @@
 {
-  "include": [
-    "src/**/*",
-    "types/**/*"
-  ],
+  "include": [ "src/**/*", "types/**/*" ],
+
   "compilerOptions": {
     "noImplicitAny": true,
     "sourceMap": true,
     "target": "es6",
     "module": "commonjs",
-    "jsx": "react"
+    "jsx": "react",
+
+		// Added
+		"resolveJsonModule": true
   }
 }

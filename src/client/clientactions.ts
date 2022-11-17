@@ -56,10 +56,13 @@ export const OpenReset: number = ActionID++;
 export const DoneLogin: number = ActionID++;
 export const DoneResetForgot: number = ActionID++;
 
+export const SetViewMode: number = ActionID++;
+
 export type ViewerProps = { [dialog: string]: any };
 export type ViewerState = { [dialog: string]: any };
 
-export type TextFields = { [name: string]: string };
+// Custom Analyze Actions
+export const SetRowToAnalyze: number = ActionID++;
 
 export interface ParamOpen
 {

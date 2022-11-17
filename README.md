@@ -1,11 +1,40 @@
-# Template Project
-This is a template project containing both server and client code.
+# DRA Analytics App
 
-The server is set up to run against AWS with access to S3 and DynamoDB. Basic account infrastructure is in place.
+This standalone app lets you to run most of DRA's partisan analytics on election profiles that don't have associated DRA maps.
 
-The client is relatively bare bones, with plumbing in place for dispatching actions and displaying dialogs.
+It is a cloned subset of the analytics on the *Advanced* tab in DRA.
 
-The main content area just has some sample code that allows picking files and displays them in a table,
-indicating whether they are parsable as JSON.
+## Partisan Profiles
 
-Fork this project to customize.
+A partisan profile is a JSON file that contains a statewide two-party Democratic vote share 
+along with district-by-district Democratic vote shares.
+For example:
+
+``` JSON
+{
+  "statewide": 0.515036,
+  "byDistrict": [
+    0.423500,
+    0.428588,
+    0.433880,
+    0.443866,
+    0.454505,
+    0.456985,
+    0.458005,
+    0.458134,
+    0.463947,
+    0.473144,
+    0.718314,
+    0.736620,
+    0.775817
+  ]
+}
+```
+
+## Using This Repository
+
+```npm install``` install all dependencies
+
+```npm run build``` build all bundles
+
+```npm run test``` run the server locally -- open a browser to http://localhost:3000

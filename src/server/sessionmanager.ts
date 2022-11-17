@@ -652,7 +652,7 @@ export class FsmAPIPresign extends FsmAPI
           break;
 
         case FSM.FSM_PENDING:
-          this.responseBody.presign = { url: this.fsmTransferUrl.url, key: this.fsmTransferUrl.key };
+          this.responseBody.presign = { url: this.fsmTransferUrl.url, key: this.fsmTransferUrl.params.key };
           this.respond();
           break;
       }
@@ -752,7 +752,9 @@ export class SessionManager
       this.bMaintenance = false;
       this.requestsTotal = 0;
       this.requestsOutstanding = 0;
+      /* REMOVE SERVICE DEPENDENCY
       this.col = env.db.createCollection('state', Schemas['state']);
+      */
       this.findSerializer = new FSM.FsmSerializer(env);
       this.updateTracker = new FSM.FsmTracker(env);
       this.mru = new MRU.ExpiringMRU();
@@ -772,9 +774,6 @@ export class SessionManager
       this.config = { version: 1 };
     }
   }
-
-  createStream(): FSM.FsmArray { return this.env.db.createStream(this.col) }
-  closeStream(stream: FSM.FsmArray) { /* this.env.db.closeStream(this.col) */ }
 
   update(sp: OT.SessionProps, o: any): FSM.Fsm
     {

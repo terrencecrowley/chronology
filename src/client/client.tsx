@@ -59,6 +59,14 @@ class Actions extends ClientActions.ClientActions
       case ClientActions.Apply:
         this.app.actionApply(arg);
         break;
+
+      case ClientActions.SetRowToAnalyze:
+        this.app.actionSetRowToAnalyze(arg);
+        break;
+      
+      case ClientActions.SetViewMode:
+        this.app.actionSetViewMode(arg);
+        break;
     }
 
     return handled ? true : this._fire(id, arg);
@@ -100,10 +108,11 @@ class App
     // Initialize props
     this.props = {
       env: this.env,
-      title: 'Template',
+      title: 'Redistricting Research',
       roles: {},
       actions: this.actions,
       isAnon: false,
+      viewMode: MA.VIEW_FILELIST,
 
       // General
       viewerProps: {},
@@ -112,6 +121,7 @@ class App
 
       // Content
       rows: [],
+      selectedRow: '',
     };
 
     this.handleResize = this.handleResize.bind(this);
@@ -232,6 +242,7 @@ class App
   {
     delete this.props.viewerProps[arg.name];
     delete this.props.viewerState[arg.name];
+    this.props.viewMode = MA.VIEW_FILELIST
     this.forceRender();
   }
 
@@ -248,6 +259,19 @@ class App
           });
         break;
     }
+  }
+
+  actionSetRowToAnalyze(id: string): void
+  {
+    this.props.selectedRow = id;
+    this.props.viewMode = MA.MAPVIEW_ANLZ;
+    this.forceRender();
+  }
+
+  actionSetViewMode(viewMode: string): void
+  {
+    this.props.viewMode = viewMode;
+    this.forceRender();
   }
 
   actionDownloadData(param: ClientActions.ParamDownloadData): void

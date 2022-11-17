@@ -107,7 +107,8 @@ export class FsmReadJSONFiles extends Fsm
           break;
 
         case FSM.FSM_PENDING:
-          this.rows = this.fsmReadFiles.map((f: FsmReadFile) => { return ({ name: f.name, s: f.result, json: f.json }) });
+          this.rows = this.fsmReadFiles.map((f: FsmReadFile, i: number) => {
+            return ({ id: String(i), name: f.name, s: f.result, json: f.json }) });
           this.setState(FSM.FSM_DONE);
           break;
       }
