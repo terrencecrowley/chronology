@@ -652,7 +652,7 @@ export class FsmAPIPresign extends FsmAPI
           break;
 
         case FSM.FSM_PENDING:
-          this.responseBody.presign = { url: this.fsmTransferUrl.url, key: this.fsmTransferUrl.key };
+          this.responseBody.presign = { url: this.fsmTransferUrl.url, key: this.fsmTransferUrl.params.key };
           this.respond();
           break;
       }

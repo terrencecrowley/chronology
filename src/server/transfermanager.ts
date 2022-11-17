@@ -20,12 +20,12 @@ export class FsmTransferUrl extends Storage.FsmTransferUrl
 
   constructor(env: Environment, params: TransferParams)
   {
-    super(env, 'transfers', params);
+    super(env, Util.shallowAssignImmutable({ bucket: 'transfers' }, params));
     if (params.data)
       this.data = params.data;
     this.fsm = env.storageManager.createTransferUrl(this.params);
     this.waitOn(this.fsm);
-    this.key = this.fsm.key;
+    this.params.key = this.fsm.params.key;
   }
 
   get env(): Environment { return this._env as Environment; }
@@ -35,7 +35,7 @@ export class FsmTransferUrl extends Storage.FsmTransferUrl
     // If we are making a data blob available for download from client, upload to S3
     if (this.params.op === 'getObject' && this.data !== undefined)
     {
-      this.blob = DataBlob.createForUpload(this.env, this.key, this.data, 'transfers');
+      this.blob = DataBlob.createForUpload(this.env, this.params.key, this.data, 'transfers');
       delete this.data;
       this.waitOn(this.blob.fsmSave);
     }
@@ -75,7 +75,7 @@ class FsmExpire extends FSM.Fsm
     if (this.ready)
     {
       if (! this.fsmUrl.iserror)
-        DataBlob.createForDelete(this.env, this.fsmUrl.key, 'transfers');
+        DataBlob.createForDelete(this.env, this.fsmUrl.params.key, 'transfers');
       this.setState(FSM.FSM_DONE);
     }
   }
