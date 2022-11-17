@@ -10,7 +10,7 @@ import {withStyles} from '@material-ui/core/styles';
 import * as RV from 'react-virtualized';
 
 // Public utilities
-import classNames from 'classnames';
+import classNames = require('classnames');
 
 // Core OT
 import { OT, Util } from '@dra2020/baseclient';

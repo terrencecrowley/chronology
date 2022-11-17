@@ -16,7 +16,7 @@ import * as Material from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 // Public utilities
-import classNames from 'classnames';
+import classNames = require('classnames');
 
 // App libraries
 import { Environment } from '../env';

@@ -10,7 +10,7 @@ import * as Icons from '@material-ui/icons';
 import * as MuiColors from '@material-ui/core/colors';
 
 // Public utilities
-import classNames from 'classnames';
+import classNames = require('classnames');
 
 /// DELETED ///
 

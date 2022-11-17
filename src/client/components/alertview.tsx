@@ -7,7 +7,7 @@ import * as Icons from '@material-ui/icons';
 import {withStyles} from '@material-ui/core/styles';
 
 // Public utilities
-import classNames from 'classnames';
+import classNames = require('classnames');
 
 // App libraries
 import * as ClientActions from "../clientactions";

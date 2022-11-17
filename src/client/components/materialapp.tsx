@@ -8,7 +8,7 @@ import {withStyles, MuiThemeProvider} from '@material-ui/core/styles';
 import * as MuiColors from '@material-ui/core/colors';
 
 // Public utilities
-import classNames from 'classnames';
+import classNames = require('classnames');
 
 // Core OT
 import {OT, Util, Poly, G} from "@dra2020/baseclient";
