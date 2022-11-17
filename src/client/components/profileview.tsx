@@ -82,7 +82,7 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
             id="name"
             label="User Name"
             inputProps={{name: 'name'}}
-            onChange={(e: any) => actions.fire(MA.ActionProfileEditField, e)}
+            onChange={(e: any) => actions.fire(MA.ActionEditField, e)}
             onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) this.handleClose(true) }}
             type="text"
             value={profileState.name}
@@ -93,7 +93,7 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
             id="email"
             label="Email Address"
             inputProps={{name: 'email'}}
-            onChange={(e: any) => actions.fire(MA.ActionProfileEditField, e)}
+            onChange={(e: any) => actions.fire(MA.ActionEditField, e)}
             onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) this.handleClose(true) }}
             type="email"
             value={profileState.email}
@@ -104,7 +104,7 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
             id="password"
             label="Password"
             inputProps={{name: 'password'}}
-            onChange={(e: any) => actions.fire(MA.ActionProfileEditField, e)}
+            onChange={(e: any) => actions.fire(MA.ActionEditField, e)}
             onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) this.handleClose(true) }}
             type="password"
             value={profileState.password}
@@ -116,7 +116,7 @@ class InternalProfileView extends React.Component<ProfileViewProps, {}>
             id="twitterhandle"
             label="Twitter Handle"
             inputProps={{name: 'twitterhandle'}}
-            onChange={(e: any) => actions.fire(MA.ActionProfileEditField, e)}
+            onChange={(e: any) => actions.fire(MA.ActionEditField, e)}
             onKeyPress={(e: any) => { if (e.key === 'Enter' && !bNoEmail && !bNoName) this.handleClose(true) }}
             type="text"
             value={profileState.twitterhandle}

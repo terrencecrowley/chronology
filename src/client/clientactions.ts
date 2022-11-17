@@ -7,32 +7,33 @@ import { Environment } from "./env";
 import * as TV from "./components/tableview";
 
 let ActionID = -1;
-export const NoOp: number = ActionID++;
-export const Home: number = ActionID++;
-export const Render: number = ActionID++;
-export const Undo: number = ActionID++;
-export const Redo: number = ActionID++;
-export const Hash: number = ActionID++; // arg is ParamHash
-export const Logout: number = ActionID++;
-export const Profile: number = ActionID++;
-export const ResetPassword: number = ActionID++;
-export const VerifyEmail: number = ActionID++;
-export const SelectionEmpty: number = ActionID++;
-export const SelectionSet: number = ActionID++; // arg is sid
-export const SelectionDouble: number = ActionID++; // arg is sid
-export const SelectionClear: number = ActionID++; // arg is sid
-export const SelectionSetAll: number = ActionID++;
-export const SelectionMeta: number = ActionID++;
-export const TableIconSelect: number = ActionID++;
-export const TableCheckSelect: number = ActionID++;
-export const TableButtonSelect: number = ActionID++;
-export const TableSort: number = ActionID++;
-export const SetColumn: number = ActionID++;
+export const NoOp = ActionID++;
+export const Home = ActionID++;
+export const Render = ActionID++;
+export const Undo = ActionID++;
+export const Redo = ActionID++;
+export const Hash = ActionID++; // arg is ParamHash
+export const Logout = ActionID++;
+export const Profile = ActionID++;
+export const ResetPassword = ActionID++;
+export const VerifyEmail = ActionID++;
+export const SelectionEmpty = ActionID++;
+export const SelectionSet = ActionID++; // arg is sid
+export const SelectionDouble = ActionID++; // arg is sid
+export const SelectionClear = ActionID++; // arg is sid
+export const SelectionSetAll = ActionID++;
+export const SelectionMeta = ActionID++;
+export const TableIconSelect = ActionID++;
+export const TableCheckSelect = ActionID++;
+export const TableButtonSelect = ActionID++;
+export const TableSort = ActionID++;
+export const SetColumn = ActionID++;
 
 // Dialogs
-export const Open: number = ActionID++;
-export const Close: number = ActionID++;
-export const Apply: number = ActionID++;
+export const Open = ActionID++;
+export const Close = ActionID++;
+export const Apply = ActionID++;
+export const TextChange = ActionID++;
 
 export const SetErrorMessage = ActionID++;  // arg is error string
 
@@ -85,12 +86,7 @@ export interface TextContainer
 
 export interface ParamProfile
 {
-  [key: string]: string;
-  name?: string;
-  email?: string;
-  password?: string;
-  feedback?: string;
-  twitterhandle?: string;
+  textFields: TextFields;
 }
 
 export type CloseFunction = (ok: boolean) => void;

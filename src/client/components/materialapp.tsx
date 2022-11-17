@@ -95,7 +95,7 @@ export class AppActions extends ClientActions.ClientActions
         this.fireIcon(arg as ClientActions.ParamTableIcon);
         break;
 
-      case -1: // If we ever have any
+      case ClientActions.TextChange:
         return this.app.fire(id, arg);
 
       default:
@@ -140,9 +140,10 @@ export interface AppProps
   theme?: any;
 }
 
-// Items that purely control visibility
+// Mostly text fields for React cursor management issues
 export interface AppState
 {
+  textFields: ClientActions.TextFields;
 }
 
 const shadingColor = MuiColors.indigo[50];
@@ -468,30 +469,22 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
 
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handlePick = this.handlePick.bind(this);
+
+    this.state = { textFields: {} };
   }
 
   fire(id: number, e?: any): boolean
   {
     const {env, actions} = this.props;
+
     const u = env.account.user;
     let param: any;
 
     switch (id)
     {
-      case ActionAlertOpen:
-        actions.fire(ClientActions.OpenAlert, e);
-        break;
-
-      case ActionAlertClose:
-        actions.fire(ClientActions.CloseAlert);
-        break;
-
-      case ActionProgressOpen:
-        actions.fire(ClientActions.OpenProgress, e);
-        break;
-
-      case ActionProgressClose:
-        actions.fire(ClientActions.CloseProgress);
+      case ClientActions.TextChange:
+        textFields[e.target.name] = e.target.value;
+        this.setState({ textFields: textFields });
         break;
 
       default:
@@ -618,6 +611,7 @@ class InternalMaterialApp extends React.Component<AppProps, AppState>
     {
       views.push(this.props.viewers[key].render(viewerProps[key], viewerState[key]));
     });
+    
     return views;
   }
 
